@@ -1,5 +1,4 @@
-## Emerging Technologies HTW-Berlin
-
+## Emerging Technologies and AI HTW-Berlin
 ### Group 4: 
 ### Project: Face and License Plate Anonymization
 
