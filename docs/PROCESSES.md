@@ -37,11 +37,11 @@ flowchart TD
     Setup --> Research[Research Models]
     Research --> Select[Select Best Models]
     Select --> Configure[Configure Environment]
-    Configure --> Implementation[Session 3-4: Implementation]
-    Implementation --> FaceDetection[Implement Face Detection]
-    Implementation --> PlateDetection[Implement License Plate Detection]
-    FaceDetection --> Integration[Integrate with API]
-    PlateDetection --> Integration
+    Configure --> Implementation[Session 3-4: Anonymization Implementation]
+    Implementation --> FaceAnonymization[Implement Face Anonymization]
+    Implementation --> PlateAnonymization[Implement License Plate Anonymization]
+    FaceAnonymization --> Integration[Integrate with API]
+    PlateAnonymization --> Integration
     Integration --> Demo[Create Demo]
     Demo --> End[Project Complete]
     
@@ -50,7 +50,7 @@ flowchart TD
     style Implementation fill:#ffe66d
 ```
 
-### 2.2 Detection Request Sequence
+### 2.2 Anonymization Request Flow
 
 ```mermaid
 sequenceDiagram
@@ -58,25 +58,69 @@ sequenceDiagram
     participant WebBrowser as Web Browser
     participant API as FastAPI Server
     participant Preprocessor
-    participant Detector as Face/Plate Detector
-    participant Model as ML Model
+    participant FaceDetector as Face Detector<br/>(RetinaFace)
+    participant PlateDetector as Plate Detector<br/>(YOLO)
+    participant Anonymizer
     
-    User->>WebBrowser: Upload Image
-    WebBrowser->>API: POST /detect (JPG/PNG)
-    API->>API: Validate Format & Size
+    User->>WebBrowser: Upload Image (JPG/PNG)
+    WebBrowser->>API: POST /anonymize
+    
+    rect rgb(240, 248, 255)
+        Note over API: Input Validation
+        API->>API: Check Format (JPG/PNG)
+        API->>API: Check Size (≤10MB)
+        API->>API: Validate Image Integrity
+    end
     
     alt Valid Image
-        API->>Preprocessor: Process Image
-        Preprocessor->>Preprocessor: Resize & Normalize
-        Preprocessor->>Detector: Send Processed Image
-        Detector->>Model: Run Inference
-        Model->>Detector: Return Detections
-        Detector->>API: Format Results (bbox, confidence)
+        rect rgb(255, 250, 240)
+            Note over API,Preprocessor: Image Preprocessing
+            API->>Preprocessor: Send Valid Image
+            Preprocessor->>Preprocessor: Resize if >4096x4096
+            Preprocessor->>Preprocessor: Convert to RGB
+            Preprocessor->>Preprocessor: Normalize Pixels
+        end
+        
+        rect rgb(240, 255, 240)
+            Note over Preprocessor,PlateDetector: Detection Phase
+            Preprocessor->>FaceDetector: Send Preprocessed Image
+            FaceDetector->>FaceDetector: Run RetinaFace Inference
+            FaceDetector->>Preprocessor: Return Face BBoxes + Confidence
+            
+            Preprocessor->>PlateDetector: Send Preprocessed Image
+            PlateDetector->>PlateDetector: Run YOLO Inference
+            PlateDetector->>Preprocessor: Return Plate BBoxes + Confidence
+        end
+        
+        rect rgb(255, 255, 224)
+            Note over Preprocessor,Anonymizer: Anonymization Phase
+            Preprocessor->>Anonymizer: Send Image + All Detections
+            Anonymizer->>Anonymizer: Filter by Confidence Threshold
+            Anonymizer->>Anonymizer: Fill Face BBoxes with Yellow (#FFFF00)
+            Anonymizer->>Anonymizer: Fill Plate BBoxes with Yellow (#FFFF00)
+            Anonymizer->>Anonymizer: Encode Anonymized Image (Base64)
+        end
+        
+        rect rgb(248, 248, 255)
+            Note over Anonymizer,API: Response Formatting
+            Anonymizer->>API: Return Anonymized Image + Metadata
+            API->>API: Format JSON Response
+            API->>API: Include Processing Time
+        end
+        
         API->>WebBrowser: 200 OK + JSON Response
-        WebBrowser->>User: Display Results
+        WebBrowser->>WebBrowser: Decode Base64 Image
+        WebBrowser->>User: Display Anonymized Image
+        WebBrowser->>User: Show Yellow-Filled Regions
+        WebBrowser->>User: Display Confidence Scores
+        
     else Invalid Image
-        API->>WebBrowser: 400/413 Error
-        WebBrowser->>User: Show Error Message
+        rect rgb(255, 240, 240)
+            Note over API: Error Handling
+            API->>API: Generate Error Message
+            API->>WebBrowser: 400/413 Error + JSON
+            WebBrowser->>User: Show Error Message
+        end
     end
 ```
 
@@ -85,7 +129,7 @@ sequenceDiagram
 ## 3. User Flow Interaction
 
 ### Overview
-This section describes the end-to-end user interaction flow for the face and license plate detection system via the Streamlit web interface.
+This section describes the end-to-end user interaction flow for the face and license plate anonymization system via the Streamlit web interface.
 
 ---
 
@@ -112,17 +156,18 @@ flowchart TD
     Processing --> Spinner[Display Loading Spinner]
     Spinner --> APICall[Send to FastAPI Backend]
     APICall --> Detection[Run Face & Plate Detection]
-    Detection --> Results[Receive Results]
+    Detection --> Anonymization[Apply Yellow Anonymization]
+    Anonymization --> Results[Receive Anonymized Results]
     
-    Results --> Display[Display Annotated Image]
-    Display --> ShowBoxes[Show Bounding Boxes]
-    ShowBoxes --> ShowScores[Show Confidence Scores]
-    ShowScores --> ShowCount[Show Detection Count]
+    Results --> Display[Display Anonymized Image]
+    Display --> ShowYellowFill[Show Yellow-Filled Regions]
+    ShowYellowFill --> ShowScores[Show Confidence Scores]
+    ShowScores --> ShowCount[Show Anonymization Count]
     
     ShowCount --> UserAction{User Action?}
     
     UserAction -->|Upload Another| Upload
-    UserAction -->|View Details| Details[View Detection Details]
+    UserAction -->|View Details| Details[View Anonymization Details]
     UserAction -->|Exit| End([User Leaves])
     
     Details --> UserAction
@@ -207,38 +252,107 @@ flowchart TD
 #### Step 5: Display Anonymized Results
 **System Action**: Renders anonymized image and detection metadata  
 
-**Visual Display**:
-- **Anonymized Image**: Displayed with yellow-filled rectangles obscuring sensitive regions
-- **Face Regions**: Solid yellow (#FFFF00) rectangles completely covering detected faces
-- **Plate Regions**: Solid yellow (#FFFF00) rectangles completely covering detected license plates
-- **Confidence Scores**: Percentage labels displayed below image
+**Visual Representation**:
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#f0f0f0','primaryTextColor':'#000','primaryBorderColor':'#333','lineColor':'#333','secondaryColor':'#ffff00','tertiaryColor':'#fff'}}}%%
+graph TB
+    subgraph Original["📷 Original Image"]
+        A["👤 Person 1<br/>👤 Person 2<br/>👤 Person 3<br/>🚗 Car with Plate"]
+    end
+    
+    subgraph Process["⚙️ Anonymization Process"]
+        B["1. Detect Faces<br/>(RetinaFace)"]
+        C["2. Detect Plates<br/>(YOLO)"]
+        D["3. Fill with Yellow<br/>(#FFFF00)"]
+    end
+    
+    subgraph Anonymized["✅ Anonymized Image"]
+        E["🟨 Yellow Box<br/>🟨 Yellow Box<br/>🟨 Yellow Box<br/>🚗 Car with 🟨"]
+    end
+    
+    Original --> Process
+    Process --> Anonymized
+    
+    style Original fill:#e3f2fd
+    style Process fill:#fff3e0
+    style Anonymized fill:#e8f5e9
+    style E fill:#ffff99
+```
+
+**Before and After Visualization**:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    BEFORE ANONYMIZATION                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│         👤                    👤                                │
+│      [Person 1]            [Person 2]                           │
+│                                                                 │
+│                  👤                                             │
+│              [Person 3]                                         │
+│                                                                 │
+│                                      🚗                         │
+│                                   [ABC-123]                     │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+                              ⬇️ ANONYMIZATION ⬇️
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    AFTER ANONYMIZATION                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│       🟨🟨🟨              🟨🟨🟨                                  │
+│       🟨🟨🟨              🟨🟨🟨                                  │
+│       🟨🟨🟨              🟨🟨🟨                                  │
+│                                                                 │
+│              🟨🟨🟨                                              │
+│              🟨🟨🟨                                              │
+│              🟨🟨🟨                                              │
+│                                                                 │
+│                                      🚗                         │
+│                                   🟨🟨🟨🟨🟨                     │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+Legend:
+  👤 = Detected Face (original)
+  🟨 = Yellow Anonymization (#FFFF00)
+  🚗 = Vehicle (not anonymized)
+  [ABC-123] = License Plate (original)
+```
 
 **Metadata Display**:
-- Total faces anonymized: `X faces anonymized`
-- Total plates anonymized: `Y plates anonymized`
-- Average confidence: `Z%`
-- Anonymization method: "Yellow color overlay"
+- Total faces anonymized: `3 faces anonymized`
+- Total plates anonymized: `1 plate anonymized`
+- Average confidence: `87%`
+- Anonymization color: `Yellow (#FFFF00)`
 
 **UI Layout**:
 ```
 ┌─────────────────────────────────────┐
 │  Anonymized Image                   │
 │  (with yellow-filled regions)       │
-│  🟨 = Face    🟨 = License Plate    │
+│                                     │
+│  All sensitive information is       │
+│  completely obscured with solid     │
+│  yellow rectangles                  │
 └─────────────────────────────────────┘
 
 📊 Anonymization Results:
    - Faces Anonymized: 3
    - Plates Anonymized: 1
    - Avg Confidence: 87%
-   - Color: Yellow (#FFFF00)
+   - Anonymization Color: Yellow (#FFFF00)
 
 ┌─────────────────────────────────────┐
 │  Anonymization Details:             │
-│  Face 1: 94% confidence             │
-│  Face 2: 89% confidence             │
-│  Face 3: 81% confidence             │
-│  Plate 1: 92% confidence            │
+│  Face 1: 94% confidence - 🟨        │
+│  Face 2: 89% confidence - 🟨        │
+│  Face 3: 81% confidence - 🟨        │
+│  Plate 1: 92% confidence - 🟨       │
 └─────────────────────────────────────┘
 ```
 
@@ -275,7 +389,7 @@ stateDiagram-v2
     
     Error --> Idle: User Corrects
     
-    Processing --> DisplayingResults: Detection Complete
+    Processing --> DisplayingResults: Anonymization Complete
     DisplayingResults --> ViewingDetails: User Expands Details
     ViewingDetails --> DisplayingResults: User Collapses
     
@@ -306,16 +420,16 @@ stateDiagram-v2
 
 #### Current (MVP)
 - ✅ Single image upload
-- ✅ Basic visualization (bounding boxes)
+- ✅ Basic visualization (yellow-filled regions)
 - ✅ Confidence scores displayed
 - ✅ Error messages
 
 #### Future Improvements (Post-POC)
 - 🔄 Batch image upload
-- 🔄 Download results (JSON, annotated image)
-- 🔄 Zoom/pan on annotated image
+- 🔄 Download results (JSON, anonymized image)
+- 🔄 Zoom/pan on anonymized image
 - 🔄 Adjustable confidence threshold slider
-- 🔄 Side-by-side comparison (original vs annotated)
+- 🔄 Side-by-side comparison (original vs anonymized)
 - 🔄 Upload history
 - 🔄 Sample images for quick testing
 - 🔄 Mobile-responsive design
@@ -337,7 +451,7 @@ stateDiagram-v2
 **Visual Accessibility**:
 - High contrast color scheme
 - Clear font sizes (minimum 14px)
-- Color-blind friendly palette (green/blue bounding boxes)
+- Yellow anonymization clearly visible
 
 ---
 
@@ -357,7 +471,7 @@ stateDiagram-v2
 ### Branch Strategy
 - `main`: Stable code
 - `develop`: Active development
-- `feature/*`: New features (e.g., `feature/face-detection`)
+- `feature/*`: New features (e.g., `feature/face-anonymization`)
 - `bugfix/*`: Bug fixes
 
 ### Git Workflow
@@ -394,6 +508,7 @@ htw-emerging-photo/
 │   ├── detection/
 │   │   ├── faces/
 │   │   └── plates/
+│   ├── anonymization/
 │   ├── api/
 │   └── utils/
 ├── tests/
@@ -410,7 +525,7 @@ htw-emerging-photo/
 
 ### Test Types
 - **Unit Tests**: Test individual functions
-- **Integration Tests**: Test complete detection flow
+- **Integration Tests**: Test complete anonymization flow
 - **Visual Tests**: Compare results with expected outputs
 
 ### Running Tests
@@ -418,11 +533,8 @@ htw-emerging-photo/
 # Run all tests
 pytest
 
-# Run with coverage
-pytest --cov=src
-
 # Test specific module
-pytest tests/test_face_detection.py
+pytest tests/test_face_anonymization.py
 ```
 
 ### Test Data
@@ -468,10 +580,10 @@ python -m src.main
 ### Docker (Optional)
 ```bash
 # Build
-docker build -t photo-detection .
+docker build -t photo-anonymization .
 
 # Run
-docker run -p 8000:8000 photo-detection
+docker run -p 8000:8000 photo-anonymization
 ```
 
 ---
@@ -566,7 +678,7 @@ python -m src.main --debug
 python scripts/download_models.py
 
 # Test with sample image
-python scripts/test_detection.py --image data/samples/test.jpg
+python scripts/test_anonymization.py --image data/samples/test.jpg
 
 # Benchmark performance
 python scripts/benchmark.py

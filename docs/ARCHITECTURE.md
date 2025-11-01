@@ -3,13 +3,14 @@
 ## 1. System Overview
 
 ### Purpose
-This document describes the technical architecture for the HTW Emerging Photo POC - a system that detects faces and license plates in images using computer vision and machine learning.
+This document describes the technical architecture for the HTW Emerging Photo POC - a system that anonymizes faces and license plates in images by detecting them and filling their regions with solid yellow color (#FFFF00) to obscure sensitive information.
 
 ### Key Capabilities
-- Face detection with bounding boxes and confidence scores
-- License plate detection with bounding boxes and confidence scores
+- Face detection and anonymization with yellow color overlay
+- License plate detection and anonymization with yellow color overlay
 - REST API for easy integration
 - Support for JPG and PNG image formats
+- Returns anonymized images with sensitive regions completely obscured
 
 ---
 
@@ -23,17 +24,18 @@ graph TB
     end
 
     subgraph Frontend["Frontend Layer (Streamlit)"]
-        UI["Streamlit UI<br/>- Image upload interface<br/>- Display results<br/>- Show bounding boxes<br/>- Display confidence scores"]
+        UI["Streamlit UI<br/>- Image upload interface<br/>- Display anonymized results<br/>- Show yellow-filled regions<br/>- Display confidence scores"]
     end
 
     subgraph API["API Layer (FastAPI)"]
-        Endpoints["Endpoints<br/>POST /detect/faces<br/>POST /detect/plates<br/>POST /detect/all<br/>GET /health"]
+        Endpoints["Endpoints<br/>POST /anonymize/faces<br/>POST /anonymize/plates<br/>POST /anonymize/all<br/>GET /health"]
         RequestHandling["Request Handling<br/>- Input validation<br/>- File upload handling<br/>- Error handling<br/>- Response formatting (JSON)"]
     end
 
     subgraph Processing["Processing Layer"]
         Preprocessor["Image Preprocessor<br/>- Validate format<br/>- Resize if needed<br/>- Convert to RGB<br/>- Normalize"]
-        Formatter["Result Formatter<br/>- Bounding boxes<br/>- Confidence scores<br/>- JSON structure"]
+        Anonymizer["Anonymizer<br/>- Fill detected regions<br/>- Apply yellow color (#FFFF00)<br/>- Obscure sensitive data"]
+        Formatter["Result Formatter<br/>- Anonymized image<br/>- Bounding boxes<br/>- Confidence scores<br/>- JSON structure"]
     end
 
     subgraph Detection["Detection Layer"]
@@ -52,8 +54,9 @@ graph TB
     RequestHandling --> Preprocessor
     Preprocessor --> FaceDetector
     Preprocessor --> PlateDetector
-    FaceDetector --> Formatter
-    PlateDetector --> Formatter
+    FaceDetector --> Anonymizer
+    PlateDetector --> Anonymizer
+    Anonymizer --> Formatter
     Formatter --> RequestHandling
     RequestHandling -->|JSON Response| UI
     FaceDetector -.->|Load models| Models
@@ -73,9 +76,10 @@ graph TB
 - Handle image upload from browser
 - Display uploaded images
 - Call backend API endpoints
-- Visualize detection results
-- Show bounding boxes on images
+- Visualize anonymization results
+- Show yellow-filled regions on images
 - Display confidence scores
+- Show before/after comparison
 
 **Key Features**:
 
@@ -91,10 +95,11 @@ graph TB
 **User Flow**:
 1. User accesses Streamlit web interface
 2. User uploads image via file uploader
-3. User selects detection type (faces/plates/both)
+3. User selects anonymization type (faces/plates/both)
 4. Streamlit calls FastAPI backend
-5. Results displayed with bounding boxes
-6. Confidence scores shown for each detection
+5. Anonymized image displayed with yellow-filled regions
+6. Confidence scores shown for each anonymized region
+7. Original vs anonymized comparison available
 
 ### 3.2 API Layer
 
@@ -110,17 +115,17 @@ graph TB
 **Key Endpoints**:
 
 ```python
-POST /detect/faces
+POST /anonymize/faces
 - Input: Image file (JPG/PNG, max 10MB)
-- Output: JSON with face detections
+- Output: JSON with anonymized image and face metadata
 
-POST /detect/plates
+POST /anonymize/plates
 - Input: Image file (JPG/PNG, max 10MB)
-- Output: JSON with plate detections
+- Output: JSON with anonymized image and plate metadata
 
-POST /detect/all
+POST /anonymize/all
 - Input: Image file (JPG/PNG, max 10MB)
-- Output: JSON with both face and plate detections
+- Output: JSON with anonymized image and both face and plate metadata
 
 GET /health
 - Output: Service health status
@@ -131,21 +136,42 @@ GET /health
 {
   "success": true,
   "processing_time": 1.23,
-  "faces": [
+  "anonymized_image": "base64_encoded_image_data",
+  "faces_anonymized": [
     {
       "id": 1,
       "bbox": {"x": 100, "y": 150, "width": 80, "height": 100},
-      "confidence": 0.95
+      "confidence": 0.95,
+      "anonymization_color": "#FFFF00"
     }
   ],
-  "plates": [
+  "plates_anonymized": [
     {
       "id": 1,
       "bbox": {"x": 200, "y": 300, "width": 120, "height": 40},
-      "confidence": 0.87
+      "confidence": 0.87,
+      "anonymization_color": "#FFFF00"
     }
   ]
 }
+```
+
+**Visual Example**:
+
+```
+BEFORE ANONYMIZATION:
+┌─────────────────────┐
+│  👤  Person         │
+│  🚗 [ABC-123]       │
+└─────────────────────┘
+
+AFTER ANONYMIZATION:
+┌─────────────────────┐
+│  🟨  Yellow Box     │
+│  🚗 🟨🟨🟨🟨         │
+└─────────────────────┘
+
+All sensitive regions filled with solid yellow (#FFFF00)
 ```
 
 ### 3.3 Processing Layer
@@ -153,7 +179,8 @@ GET /health
 **Responsibilities**:
 - Preprocess images for optimal detection
 - Validate image integrity
-- Format detection results
+- Apply anonymization (yellow color fill)
+- Format anonymization results
 - Handle coordinate transformations
 
 **Components**:
@@ -175,15 +202,27 @@ class ImagePreprocessor:
         # Return as numpy array
 ```
 
+#### Anonymizer
+```python
+class Anonymizer:
+    """Applies yellow anonymization to detected regions"""
+    
+    def anonymize(image, detections, color="#FFFF00") -> np.ndarray:
+        # Fill bounding boxes with solid yellow color
+        # Completely obscure sensitive regions
+        # Return anonymized image
+```
+
 #### Result Formatter
 ```python
 class ResultFormatter:
-    """Formats detection results as JSON"""
+    """Formats anonymization results as JSON"""
     
-    def format_detections(faces, plates, time) -> dict:
+    def format_results(anonymized_image, faces, plates, time) -> dict:
+        # Encode anonymized image as base64
         # Convert bounding boxes to standard format
         # Add unique IDs
-        # Include confidence scores
+        # Include confidence scores and anonymization color
         # Add metadata (processing time, etc.)
 ```
 
@@ -194,6 +233,7 @@ class ResultFormatter:
 - Perform face detection
 - Perform license plate detection
 - Return bounding boxes and confidence scores
+- Provide detection data for anonymization
 
 **Components**:
 
@@ -260,25 +300,72 @@ data/models/
 
 ## 4. Data Flow
 
-### 4.1 Detection Request Flow
+### 4.1 Anonymization Request Flow
 
 ```mermaid
 sequenceDiagram
     participant Client
     participant API as API Layer
-    participant Processing as Processing Layer
-    participant Detection as Detection Layer
+    participant Preprocessor
+    participant FaceDetector as Face Detector<br/>(RetinaFace)
+    participant PlateDetector as Plate Detector<br/>(YOLO)
+    participant Anonymizer
     
-    Client->>API: POST /detect with image
-    API->>API: Validate request<br/>- Check content type<br/>- Validate file size<br/>- Check file format
-    API->>Processing: Send validated image
-    Processing->>Processing: Preprocess image<br/>- Read image file<br/>- Validate integrity<br/>- Resize if necessary<br/>- Convert to RGB array
-    Processing->>Detection: Send preprocessed image
-    Detection->>Detection: Perform inference<br/>- Load image into model<br/>- Run detection<br/>- Filter by confidence threshold
-    Detection->>Processing: Return detections
-    Processing->>Processing: Format results<br/>- Convert bounding boxes<br/>- Add metadata<br/>- Create JSON structure
-    Processing->>API: Return formatted results
-    API->>Client: HTTP 200 with JSON<br/>(or HTTP 4xx/5xx on error)
+    Client->>API: POST /anonymize with image
+    
+    rect rgb(240, 248, 255)
+        Note over API: Input Validation
+        API->>API: Check Format (JPG/PNG)
+        API->>API: Check Size (≤10MB)
+        API->>API: Validate Image Integrity
+    end
+    
+    alt Valid Image
+        rect rgb(255, 250, 240)
+            Note over API,Preprocessor: Image Preprocessing
+            API->>Preprocessor: Send Valid Image
+            Preprocessor->>Preprocessor: Resize if >4096x4096
+            Preprocessor->>Preprocessor: Convert to RGB
+            Preprocessor->>Preprocessor: Normalize Pixels
+        end
+        
+        rect rgb(240, 255, 240)
+            Note over Preprocessor,PlateDetector: Detection Phase
+            Preprocessor->>FaceDetector: Send Preprocessed Image
+            FaceDetector->>FaceDetector: Run RetinaFace Inference
+            FaceDetector->>Preprocessor: Return Face BBoxes + Confidence
+            
+            Preprocessor->>PlateDetector: Send Preprocessed Image
+            PlateDetector->>PlateDetector: Run YOLO Inference
+            PlateDetector->>Preprocessor: Return Plate BBoxes + Confidence
+        end
+        
+        rect rgb(255, 255, 224)
+            Note over Preprocessor,Anonymizer: Anonymization Phase
+            Preprocessor->>Anonymizer: Send Image + All Detections
+            Anonymizer->>Anonymizer: Filter by Confidence Threshold
+            Anonymizer->>Anonymizer: Fill Face BBoxes with Yellow (#FFFF00)
+            Anonymizer->>Anonymizer: Fill Plate BBoxes with Yellow (#FFFF00)
+            Anonymizer->>Anonymizer: Encode Anonymized Image (Base64)
+        end
+        
+        rect rgb(248, 248, 255)
+            Note over Anonymizer,API: Response Formatting
+            Anonymizer->>API: Return Anonymized Image + Metadata
+            API->>API: Format JSON Response
+            API->>API: Include Processing Time
+        end
+        
+        API->>Client: 200 OK + JSON Response
+        Note over Client: Display Anonymized Image<br/>Show Yellow-Filled Regions<br/>Display Confidence Scores
+        
+    else Invalid Image
+        rect rgb(255, 240, 240)
+            Note over API: Error Handling
+            API->>API: Generate Error Message
+            API->>Client: 400/413 Error + JSON
+        end
+    end
 ```
 
 ### 4.2 Error Handling Flow

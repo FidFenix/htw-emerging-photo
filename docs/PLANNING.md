@@ -2,7 +2,7 @@
 
 ## Project Information
 
-**Project Name**: HTW Emerging Photo - Face and License Plate Detection POC  
+**Project Name**: HTW Emerging Photo - Face and License Plate Anonymization POC  
 **Start Date**: October 20, 2025  
 **Duration**: 4 Sessions  
 **Status**: In Progress  
@@ -13,17 +13,18 @@
 ## 1. Project Overview
 
 ### Vision
-Develop an AI-powered detection system that automatically identifies and locates faces and license plates in surveillance imagery from public transport environments (bus stops, metro stations) - serving as the foundation for future privacy-preserving anonymization.
+Develop an AI-powered anonymization system that automatically detects and obscures faces and license plates in surveillance imagery from public transport environments (bus stops, metro stations) using solid yellow color overlay - providing immediate privacy protection while serving as the foundation for future advanced anonymization techniques.
 
 ### Mission Statement
-Validate the technical feasibility of automated detection using state-of-the-art models (RetinaFace, YOLO) to achieve ≥90% face detection and ≥85% license plate detection accuracy within a 4-session timeline.
+Validate the technical feasibility of automated anonymization using state-of-the-art models (RetinaFace, YOLO) to achieve ≥90% face detection and ≥85% license plate detection accuracy, with complete visual obscuration of sensitive regions through yellow color fill, within a 4-session timeline.
 
 ### Success Definition
 A working POC with:
-- Face detection module (RetinaFace) achieving ≥90% accuracy
-- License plate detection module (YOLO) achieving ≥85% accuracy  
+- Face detection and anonymization module (RetinaFace) achieving ≥90% accuracy with yellow color fill
+- License plate detection and anonymization module (YOLO) achieving ≥85% accuracy with yellow color fill
+- Complete visual obscuration of sensitive regions with solid yellow (#FFFF00)
 - REST API for integration (FastAPI)
-- Web UI for demonstration (Streamlit)
+- Web UI for demonstration with before/after visualization (Streamlit)
 - Docker deployment
 - Comprehensive evaluation (quantitative + qualitative)
 
@@ -32,23 +33,24 @@ A working POC with:
 ## 2. Project Scope
 
 ### In Scope
-✅ Face detection with bounding boxes and confidence scores  
-✅ License plate detection with bounding boxes and confidence scores  
-✅ REST API interface  
-✅ Streamlit web UI for image upload and visualization  
+✅ Face detection and anonymization with yellow color fill and confidence scores  
+✅ License plate detection and anonymization with yellow color fill and confidence scores  
+✅ Complete visual obscuration of sensitive regions with solid yellow (#FFFF00)  
+✅ REST API interface for anonymization services  
+✅ Streamlit web UI for image upload, before/after visualization, and anonymized results  
 ✅ Docker containerization  
 ✅ Quantitative evaluation (precision, recall, F1-score)  
-✅ Qualitative evaluation (visual assessment of edge cases)  
+✅ Qualitative evaluation (visual assessment of anonymization quality and edge cases)  
 
 ### Out of Scope
 ❌ Real-time video stream processing  
-❌ Generative anonymization (inpainting/synthetic replacement)  
+❌ Advanced generative anonymization (inpainting/synthetic replacement with realistic alternatives)  
 ❌ Hardware optimization or edge deployment  
 ❌ Formal GDPR/CCPA compliance framework  
 ❌ Multi-camera or multi-scene scaling  
 ❌ Face recognition (identification of individuals)  
 ❌ OCR/license plate text extraction  
-❌ Generation of anonymized sample video  
+❌ Generation of anonymized sample video (images only)  
 
 ### Constraints
 ⚠️ **Timeline**: 4 sessions only  
@@ -65,10 +67,10 @@ A working POC with:
 
 | Session | Focus Area | Key Deliverables |
 |---------|------------|------------------|
-| **Session 1** | Environment Setup & Model Research | Docker env, model evaluation, dataset sourcing |
-| **Session 2** | Model Integration & API Development | RetinaFace + YOLO integrated, FastAPI skeleton |
-| **Session 3** | UI Development & Testing | Streamlit UI, initial validation dataset |
-| **Session 4** | Evaluation & Demo Preparation | Accuracy metrics, documentation, demo ready |
+| **Session 1** | Environment Setup & Model Research | Docker env, model evaluation |
+| **Session 2** | Model Integration, Anonymization & API Development | RetinaFace + YOLO integrated, yellow anonymization implemented, FastAPI skeleton |
+| **Session 3** | UI Development & Testing | Streamlit UI with before/after visualization |
+| **Session 4** | Evaluation & Demo Preparation | Accuracy metrics, anonymization quality assessment, documentation, demo ready |
 
 ### Detailed Milestones
 
@@ -78,7 +80,6 @@ gantt
     dateFormat YYYY-MM-DD
     section Session 1-2: Foundation
     Environment Setup           :2025-10-20, 2d
-    Dataset Sourcing           :2025-10-21, 3d
     Model Selection            :2025-10-22, 2d
     RetinaFace Integration     :2025-10-23, 3d
     YOLO Integration           :2025-10-23, 3d
@@ -95,24 +96,25 @@ gantt
 
 ## 4. Epics and User Stories
 
-### Epic 1: Face Detection System
+### Epic 1: Face Detection and Anonymization System
 **As a** security operator  
-**I want** an automated face detection system  
-**So that** I can identify individuals in surveillance footage without manual review
+**I want** an automated face detection and anonymization system  
+**So that** I can protect individual privacy in surveillance footage without manual review
 
 **Acceptance Criteria**:
 - Face detection accuracy ≥ 90%
-- Multiple faces detected in single image
+- Multiple faces detected and anonymized in single image
+- Solid yellow color (#FFFF00) completely obscures detected faces
 - Bounding boxes and confidence scores provided
 - Handles various lighting conditions and angles
 
 #### User Stories
 
-**US-1.1: Upload Image for Face Detection**
+**US-1.1: Upload Image for Face Anonymization**
 ```
 As a user
 I want to upload an image file (JPG/PNG)
-So that the system can detect faces in it
+So that the system can detect and anonymize faces in it
 
 Acceptance Criteria:
 - [ ] Supports JPG and PNG formats
@@ -124,31 +126,32 @@ Priority: High
 Estimate: 3 points
 ```
 
-**US-1.2: View Detected Faces with Bounding Boxes**
+**US-1.2: View Anonymized Faces with Yellow Fill**
 ```
 As a user
-I want to see bounding boxes around detected faces
-So that I can visually verify the detection results
+I want to see yellow-filled regions covering detected faces
+So that I can visually verify the anonymization results
 
 Acceptance Criteria:
-- [ ] Bounding boxes drawn on original image
-- [ ] Each box labeled with confidence score
+- [ ] Solid yellow (#FFFF00) fill completely obscures faces
+- [ ] Each anonymized region labeled with confidence score
 - [ ] Visual distinction for multiple faces
 - [ ] Clear, readable visualization
+- [ ] Before/after comparison available
 
 Priority: High
 Estimate: 5 points
 ```
 
-**US-1.3: Filter Face Detections by Confidence**
+**US-1.3: Filter Face Anonymizations by Confidence**
 ```
 As a user
-I want faces with confidence scores below 70% to be excluded
-So that I only see high-confidence detections
+I want faces with confidence scores below 70% to be excluded from anonymization
+So that I only anonymize high-confidence detections
 
 Acceptance Criteria:
 - [ ] Minimum confidence threshold: 70%
-- [ ] Low-confidence detections not displayed
+- [ ] Low-confidence detections not anonymized
 - [ ] Configurable threshold (future)
 - [ ] Confidence displayed as percentage
 
@@ -159,13 +162,13 @@ Estimate: 2 points
 **US-1.4: Handle Multiple Faces in Image**
 ```
 As a user
-I want the system to detect multiple faces in a single image
-So that I can analyze group photos or crowded scenes
+I want the system to detect and anonymize multiple faces in a single image
+So that I can protect privacy in group photos or crowded scenes
 
 Acceptance Criteria:
-- [ ] Detects all visible faces
+- [ ] Detects and anonymizes all visible faces
 - [ ] No limit on number of faces
-- [ ] Each face has unique bounding box
+- [ ] Each face has unique yellow-filled region
 - [ ] All confidence scores displayed
 
 Priority: High
@@ -174,24 +177,25 @@ Estimate: 3 points
 
 ---
 
-### Epic 2: License Plate Detection System
+### Epic 2: License Plate Detection and Anonymization System
 **As a** traffic analyst  
-**I want** an automated license plate detection system  
-**So that** I can identify vehicles in surveillance footage for traffic analysis
+**I want** an automated license plate detection and anonymization system  
+**So that** I can protect vehicle privacy in surveillance footage while maintaining traffic analysis capabilities
 
 **Acceptance Criteria**:
 - License plate detection accuracy ≥ 85%
-- Multiple plates detected in single image
+- Multiple plates detected and anonymized in single image
+- Solid yellow color (#FFFF00) completely obscures detected plates
 - Bounding boxes and confidence scores provided
 - Handles various plate sizes and angles
 
 #### User Stories
 
-**US-2.1: Upload Image for Plate Detection**
+**US-2.1: Upload Image for Plate Anonymization**
 ```
 As a user
 I want to upload an image file (JPG/PNG)
-So that the system can detect license plates in it
+So that the system can detect and anonymize license plates in it
 
 Acceptance Criteria:
 - [ ] Supports JPG and PNG formats
@@ -203,31 +207,32 @@ Priority: High
 Estimate: 3 points
 ```
 
-**US-2.2: View Detected Plates with Bounding Boxes**
+**US-2.2: View Anonymized Plates with Yellow Fill**
 ```
 As a user
-I want to see bounding boxes around detected license plates
-So that I can visually verify the detection results
+I want to see yellow-filled regions covering detected license plates
+So that I can visually verify the anonymization results
 
 Acceptance Criteria:
-- [ ] Bounding boxes drawn on original image
-- [ ] Each box labeled with confidence score
+- [ ] Solid yellow (#FFFF00) fill completely obscures plates
+- [ ] Each anonymized region labeled with confidence score
 - [ ] Visual distinction for multiple plates
 - [ ] Clear, readable visualization
+- [ ] Before/after comparison available
 
 Priority: High
 Estimate: 5 points
 ```
 
-**US-2.3: Filter Plate Detections by Confidence**
+**US-2.3: Filter Plate Anonymizations by Confidence**
 ```
 As a user
-I want plates with confidence scores below 60% to be excluded
-So that I only see high-confidence detections
+I want plates with confidence scores below 60% to be excluded from anonymization
+So that I only anonymize high-confidence detections
 
 Acceptance Criteria:
 - [ ] Minimum confidence threshold: 60%
-- [ ] Low-confidence detections not displayed
+- [ ] Low-confidence detections not anonymized
 - [ ] Configurable threshold (future)
 - [ ] Confidence displayed as percentage
 
@@ -238,13 +243,13 @@ Estimate: 2 points
 **US-2.4: Handle Multiple Plates in Image**
 ```
 As a user
-I want the system to detect multiple license plates in a single image
-So that I can analyze parking lots or multi-vehicle scenes
+I want the system to detect and anonymize multiple license plates in a single image
+So that I can protect privacy in parking lots or multi-vehicle scenes
 
 Acceptance Criteria:
-- [ ] Detects all visible plates
+- [ ] Detects and anonymizes all visible plates
 - [ ] No limit on number of plates
-- [ ] Each plate has unique bounding box
+- [ ] Each plate has unique yellow-filled region
 - [ ] All confidence scores displayed
 
 Priority: High
@@ -255,42 +260,43 @@ Estimate: 3 points
 
 ### Epic 3: REST API Interface
 **As a** developer  
-**I want** a REST API for detection services  
-**So that** I can integrate the detection system with other applications
+**I want** a REST API for anonymization services  
+**So that** I can integrate the anonymization system with other applications
 
 **Acceptance Criteria**:
-- API endpoint for image upload and detection
-- JSON response with bounding boxes and confidence scores
+- API endpoint for image upload and anonymization
+- JSON response with anonymized image, bounding boxes, and confidence scores
 - Proper error handling and status codes
 - API documentation available
 
 #### User Stories
 
-**US-3.1: POST Image for Detection**
+**US-3.1: POST Image for Anonymization**
 ```
 As a developer
-I want to POST an image to /detect endpoint
-So that I can receive detection results programmatically
+I want to POST an image to /anonymize endpoint
+So that I can receive anonymization results programmatically
 
 Acceptance Criteria:
 - [ ] Accepts multipart/form-data
-- [ ] Processes both face and plate detection
-- [ ] Returns JSON response
+- [ ] Processes both face and plate anonymization
+- [ ] Returns JSON response with anonymized image
 - [ ] Response time < 5 seconds
 
 Priority: High
 Estimate: 5 points
 ```
 
-**US-3.2: Receive Structured Detection Results**
+**US-3.2: Receive Structured Anonymization Results**
 ```
 As a developer
-I want detection results in JSON format
+I want anonymization results in JSON format
 So that I can easily parse and use the data
 
 Acceptance Criteria:
-- [ ] JSON includes faces array with bbox + confidence
-- [ ] JSON includes plates array with bbox + confidence
+- [ ] JSON includes base64-encoded anonymized image
+- [ ] JSON includes faces_anonymized array with bbox + confidence + color
+- [ ] JSON includes plates_anonymized array with bbox + confidence + color
 - [ ] Consistent response structure
 - [ ] Human-readable and machine-parseable
 
@@ -335,12 +341,12 @@ Estimate: 1 point
 ### Epic 4: Web User Interface
 **As a** end user  
 **I want** a simple web interface  
-**So that** I can upload images and view detection results without technical knowledge
+**So that** I can upload images and view anonymization results without technical knowledge
 
 **Acceptance Criteria**:
 - Streamlit-based web UI
 - Image upload widget
-- Visual display of detection results
+- Visual display of anonymization results with before/after comparison
 - User-friendly and intuitive
 
 #### User Stories
@@ -361,15 +367,16 @@ Priority: High
 Estimate: 5 points
 ```
 
-**US-4.2: View Original and Annotated Images**
+**US-4.2: View Original and Anonymized Images**
 ```
 As an end user
-I want to see my original image with bounding boxes overlaid
-So that I can visually verify detections
+I want to see my original image and anonymized image side-by-side
+So that I can visually verify anonymization results
 
 Acceptance Criteria:
 - [ ] Original image displayed
-- [ ] Bounding boxes clearly visible
+- [ ] Anonymized image with yellow-filled regions displayed
+- [ ] Before/after comparison view
 - [ ] Color-coded (faces vs plates)
 - [ ] Zoomable/high-quality display
 
@@ -377,17 +384,18 @@ Priority: High
 Estimate: 5 points
 ```
 
-**US-4.3: View Detection Metadata**
+**US-4.3: View Anonymization Metadata**
 ```
 As an end user
-I want to see detection counts and confidence scores
-So that I understand the detection quality
+I want to see anonymization counts and confidence scores
+So that I understand the anonymization quality
 
 Acceptance Criteria:
-- [ ] Total faces detected displayed
-- [ ] Total plates detected displayed
-- [ ] Confidence score per detection
+- [ ] Total faces anonymized displayed
+- [ ] Total plates anonymized displayed
+- [ ] Confidence score per anonymization
 - [ ] Average confidence score
+- [ ] Anonymization color displayed (#FFFF00)
 
 Priority: Medium
 Estimate: 3 points
@@ -414,13 +422,13 @@ Estimate: 2 points
 ### Epic 5: Model Evaluation and Testing
 **As a** data scientist  
 **I want** comprehensive evaluation metrics  
-**So that** I can validate the system's accuracy and performance
+**So that** I can validate the system's detection accuracy and anonymization quality
 
 **Acceptance Criteria**:
 - Quantitative metrics (precision, recall, F1-score)
-- Qualitative assessment (edge cases, failure analysis)
+- Qualitative assessment (anonymization quality, edge cases, failure analysis)
 - Test on diverse dataset (100+ images)
-- Documented results
+- Documented results with visual examples
 
 #### User Stories
 
@@ -466,7 +474,8 @@ So that stakeholders can review system performance
 Acceptance Criteria:
 - [ ] Quantitative metrics table
 - [ ] Qualitative assessment section
-- [ ] Sample detection visualizations
+- [ ] Sample anonymization visualizations (before/after)
+- [ ] Anonymization quality assessment
 - [ ] Limitations and recommendations
 
 Priority: Medium
@@ -542,8 +551,8 @@ Estimate: 3 points
 
 | Epic | Total Stories | Total Points | Priority | Session |
 |------|---------------|--------------|----------|---------|
-| **Epic 1: Face Detection** | 4 stories | 13 points | High | 2-3 |
-| **Epic 2: Plate Detection** | 4 stories | 13 points | High | 2-3 |
+| **Epic 1: Face Anonymization** | 4 stories | 13 points | High | 2-3 |
+| **Epic 2: Plate Anonymization** | 4 stories | 13 points | High | 2-3 |
 | **Epic 3: REST API** | 4 stories | 12 points | High | 2 |
 | **Epic 4: Web UI** | 4 stories | 15 points | High | 3 |
 | **Epic 5: Evaluation** | 3 stories | 13 points | High | 4 |
@@ -560,13 +569,13 @@ This journey map illustrates the complete user experience for three primary pers
 ---
 
 ### Persona 1: End User (Security Operator)
-**Goal**: Upload an image and receive face/plate detection results
+**Goal**: Upload an image and receive face/plate anonymization results
 
 #### Journey Stages
 
 ```mermaid
 journey
-    title End User Journey - Image Upload & Detection
+    title End User Journey - Image Upload & Anonymization
     section Discover
       Learn about system: 3: User
       Access web interface: 4: User
@@ -576,13 +585,14 @@ journey
       Validate file format/size: 4: User, System
       Submit image: 5: User
     section Process
-      Wait for detection: 3: User, System
+      Wait for anonymization: 3: User, System
       View processing status: 4: User, System
     section Review
-      View annotated image: 5: User
-      Check bounding boxes: 5: User
+      View anonymized image: 5: User
+      Check yellow-filled regions: 5: User
+      Compare before/after: 5: User
       Review confidence scores: 4: User
-      Assess detection quality: 4: User
+      Assess anonymization quality: 4: User
     section Action
       Download results (optional): 3: User
       Upload another image: 5: User
@@ -592,9 +602,9 @@ journey
 |-------|---------|-------------|----------|-------------|---------------|
 | **1. Discover** | - Access system URL<br>- View landing page<br>- Understand capabilities | - Web browser<br>- Streamlit UI | 😐 Neutral<br>Curious about functionality | - Unclear system purpose<br>- No onboarding | + Welcome message<br>+ Quick demo video |
 | **2. Upload** | - Click upload button<br>- Select JPG/PNG file<br>- Confirm file < 10MB<br>- Submit for processing | - File upload widget<br>- Drag-and-drop zone<br>- Error messages | 😊 Confident<br>Easy to use | - File size limits unclear<br>- Supported formats not obvious | + Clear format labels<br>+ File size preview<br>+ Drag-and-drop support |
-| **3. Process** | - Wait for detection<br>- Monitor progress<br>- System runs inference | - Progress indicator<br>- Loading spinner<br>- API backend | 😐 Neutral<br>Waiting patiently | - No progress feedback<br>- Unclear processing time | + Progress bar<br>+ Estimated time remaining |
-| **4. Review** | - View original image<br>- Examine bounding boxes<br>- Read confidence scores<br>- Verify detections | - Annotated image display<br>- Detection metadata<br>- Confidence labels | 😃 Satisfied<br>Results are clear | - Small bounding boxes hard to see<br>- No zoom functionality | + Zoom/pan controls<br>+ Color-coded boxes<br>+ Highlight on hover |
-| **5. Action** | - Decide next steps<br>- Upload new image<br>- Share results | - Upload button<br>- Download option | 😊 Accomplished<br>Task complete | - Can't save results<br>- No batch upload | + Export JSON results<br>+ Batch processing<br>+ History log |
+| **3. Process** | - Wait for anonymization<br>- Monitor progress<br>- System runs inference and anonymization | - Progress indicator<br>- Loading spinner<br>- API backend | 😐 Neutral<br>Waiting patiently | - No progress feedback<br>- Unclear processing time | + Progress bar<br>+ Estimated time remaining |
+| **4. Review** | - View original image<br>- View anonymized image<br>- Examine yellow-filled regions<br>- Compare before/after<br>- Read confidence scores<br>- Verify anonymization | - Before/after image display<br>- Anonymization metadata<br>- Confidence labels | 😃 Satisfied<br>Results are clear | - Small yellow regions hard to see<br>- No zoom functionality | + Zoom/pan controls<br>+ Side-by-side comparison<br>+ Highlight on hover |
+| **5. Action** | - Decide next steps<br>- Upload new image<br>- Share results | - Upload button<br>- Download option | 😊 Accomplished<br>Task complete | - Can't save results<br>- No batch upload | + Export anonymized image<br>+ Batch processing<br>+ History log |
 
 ---
 
@@ -609,9 +619,11 @@ journey
 
 #### Positive Moments
 1. **Simple Upload**: Drag-and-drop interface is intuitive
-2. **Clear Visualizations**: Bounding boxes and confidence scores are helpful
-3. **Fast Processing**: Results appear quickly (< 5 seconds)
-4. **Accurate Detections**: High precision (90%+ faces, 85%+ plates)
+2. **Clear Visualizations**: Yellow-filled regions and confidence scores are helpful
+3. **Before/After Comparison**: Easy to see what was anonymized
+4. **Fast Processing**: Results appear quickly (< 5 seconds)
+5. **Accurate Anonymization**: High precision (90%+ faces, 85%+ plates)
+6. **Complete Obscuration**: Yellow fill completely hides sensitive information
 
 #### Opportunities for Improvement (Future Phases)
 1. ✅ **Batch Upload**: Process multiple images in one session
@@ -643,17 +655,7 @@ journey
 | **Docker** | Containerization | Available |
 | **GitHub** | Version control | Available |
 
-### 6.3 Dataset Resources
-
-| Dataset | Purpose | Source |
-|---------|---------|--------|
-| **WIDER FACE** | Face detection test data | http://shuoyang1213.me/WIDERFACE/ |
-| **CelebA** | Face detection validation | http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html |
-| **CCPD** | Chinese City Parking Dataset (plates) | https://github.com/detectRecog/CCPD |
-| **OpenALPR Dataset** | License plate samples | Community sources |
-| **Custom Samples** | Edge cases, specific scenarios | Manual collection |
-
-### 6.4 Model Resources
+### 6.3 Model Resources
 
 | Model | Purpose | Source |
 |-------|---------|--------|
@@ -669,7 +671,7 @@ journey
 | ID | Risk | Probability | Impact | Mitigation Strategy | Owner |
 |----|------|-------------|--------|---------------------|-------|
 | **R1** | Insufficient time for integration | High | High | Focus on core features only; defer nice-to-haves | Developer |
-| **R2** | Dataset quality issues | Medium | High | Use multiple dataset sources; manual curation | Developer |
+| **R2** | Test image availability | Low | Medium | Use publicly available sample images | Developer |
 | **R3** | Model accuracy below target | Low | High | Use proven pre-trained models; extensive testing | Developer |
 | **R4** | GPU unavailability | Medium | Medium | Optimize for CPU inference; use smaller models | Developer |
 | **R5** | Integration bugs (API-UI) | Medium | Medium | Test incrementally; allocate debug time | Developer |
@@ -724,6 +726,7 @@ journey
 |-----------|--------|-------------|
 | **Face Detection Accuracy** | ≥90% precision | Test on 100+ labeled images |
 | **Plate Detection Accuracy** | ≥85% precision | Test on 100+ labeled images |
+| **Anonymization Quality** | 100% obscuration | Visual assessment of yellow-filled regions |
 | **API Response Time** | <5 seconds per image | Performance testing |
 | **UI Responsiveness** | No crashes, smooth upload | Manual testing |
 | **Code Quality** | Clean, documented | Code review |
@@ -758,18 +761,22 @@ journey
 
 - [ ] RetinaFace integrated and functional
 - [ ] YOLO integrated and functional
+- [ ] Yellow anonymization implemented and working
 - [ ] Face detection achieves ≥90% precision on test dataset
 - [ ] License plate detection achieves ≥85% precision on test dataset
+- [ ] Yellow fill completely obscures all detected faces and plates
 - [ ] FastAPI backend responds correctly to POST requests
-- [ ] Streamlit UI allows image upload and displays results
-- [ ] Bounding boxes visualized correctly on images
-- [ ] Confidence scores displayed per detection
+- [ ] Streamlit UI allows image upload and displays anonymized results
+- [ ] Yellow-filled regions visualized correctly on images
+- [ ] Before/after comparison available in UI
+- [ ] Confidence scores displayed per anonymization
 - [ ] Error handling works (invalid file, oversized file)
 - [ ] Docker container builds successfully
 - [ ] Docker container runs without errors
 - [ ] Evaluation metrics documented (precision, recall, F1)
+- [ ] Anonymization quality assessed and documented
 - [ ] All documentation files complete (ARCHITECTURE, REQUIREMENTS, PROCESSES, VALUE_PROPOSITION, PLANNING)
-- [ ] Demo successfully presented to stakeholders
+- [ ] Demo successfully presented to stakeholders with visual examples
 - [ ] Positive stakeholder feedback (≥8/10 satisfaction)
 
 ---
@@ -803,22 +810,20 @@ journey
 
 ### Session 1: Foundation & Setup
 **Date**: October 20-21, 2025  
-**Goal**: Environment ready, models selected, dataset sourced
+**Goal**: Environment ready, models selected
 
 **Tasks**:
 1. Set up Docker development environment
 2. Install Python dependencies (PyTorch, FastAPI, Streamlit)
 3. Research and select models (RetinaFace, YOLO)
 4. Download pre-trained model weights
-5. Source test datasets (WIDER FACE, CCPD)
-6. Test sample inference with both models
+5. Test sample inference with both models
 
 **Deliverables**:
 - Working Docker environment
 - Models successfully loaded and tested
-- Test dataset prepared (100+ images)
 
-**Risks**: Dataset quality, model download issues
+**Risks**: Model download issues
 
 ---
 
@@ -900,7 +905,7 @@ The POC is organized as a single 4-session sprint (equivalent to 1 week) with da
 ---
 
 ### Sprint Goal
-**Deliver a functional face and license plate detection POC with Streamlit UI, FastAPI backend, and validated accuracy metrics (≥90% faces, ≥85% plates) by end of Session 4.**
+**Deliver a functional face and license plate anonymization POC with yellow color overlay, Streamlit UI with before/after visualization, FastAPI backend, and validated accuracy metrics (≥90% faces, ≥85% plates) with complete visual obscuration by end of Session 4.**
 
 ---
 
@@ -943,20 +948,18 @@ The POC is organized as a single 4-session sprint (equivalent to 1 week) with da
 ### Sprint Breakdown by Session
 
 #### Session 1 (Day 1): Foundation
-**Focus**: Environment setup, model selection, dataset preparation
+**Focus**: Environment setup, model selection
 
 **Tasks**:
 - [ ] Set up Docker development environment
 - [ ] Install Python dependencies (PyTorch, FastAPI, Streamlit)
 - [ ] Download pre-trained RetinaFace model
 - [ ] Download pre-trained YOLO model
-- [ ] Source test datasets (WIDER FACE, CCPD)
 - [ ] Test sample inference with both models
-- [ ] Organize test dataset (100+ images)
 
 **User Stories**: Setup prerequisites for US-1.x, US-2.x  
 **Velocity Target**: 0 pts (setup only)  
-**Definition of Done**: Environment ready, models tested, dataset prepared
+**Definition of Done**: Environment ready, models tested
 
 ---
 
@@ -966,11 +969,12 @@ The POC is organized as a single 4-session sprint (equivalent to 1 week) with da
 **Tasks**:
 - [ ] Integrate RetinaFace model (US-1.1, US-1.4)
 - [ ] Integrate YOLO model (US-2.1, US-2.4)
+- [ ] Implement yellow anonymization module
 - [ ] Implement image preprocessing pipeline
 - [ ] Create FastAPI application structure (US-3.1)
-- [ ] Implement `/detect` endpoint (US-3.1)
+- [ ] Implement `/anonymize` endpoint (US-3.1)
 - [ ] Add confidence score filtering (US-1.3, US-2.3)
-- [ ] Implement JSON response formatting (US-3.2)
+- [ ] Implement JSON response formatting with anonymized image (US-3.2)
 - [ ] Add error handling (US-3.3)
 - [ ] Test API with curl/Postman
 
@@ -987,8 +991,9 @@ The POC is organized as a single 4-session sprint (equivalent to 1 week) with da
 - [ ] Create Streamlit application structure (US-4.1)
 - [ ] Implement image upload widget (US-4.1)
 - [ ] Connect UI to FastAPI backend
-- [ ] Display uploaded image
-- [ ] Visualize bounding boxes on image (US-1.2, US-2.2, US-4.2)
+- [ ] Display uploaded image (original)
+- [ ] Display anonymized image with yellow-filled regions (US-1.2, US-2.2, US-4.2)
+- [ ] Implement before/after comparison view (US-4.2)
 - [ ] Display confidence scores (US-4.3)
 - [ ] Add error message handling (US-4.4)
 - [ ] Test end-to-end user flow
@@ -1046,7 +1051,7 @@ The POC is organized as a single 4-session sprint (equivalent to 1 week) with da
 3. Are there any blockers or risks?
 
 **Example (Session 2)**:
-- **Completed**: Environment setup, models downloaded, test dataset organized
+- **Completed**: Environment setup, models downloaded and tested
 - **Today**: Integrate RetinaFace and YOLO, build FastAPI backend
 - **Blockers**: None (if GPU unavailable, will use CPU inference)
 
@@ -1058,15 +1063,18 @@ The POC is organized as a single 4-session sprint (equivalent to 1 week) with da
 **Duration**: 30-45 minutes
 
 **Agenda**:
-1. **Demo**: Live demonstration of detection system
+1. **Demo**: Live demonstration of anonymization system
    - Upload sample images via Streamlit UI
-   - Show face detection results with bounding boxes
-   - Show license plate detection results
+   - Show face anonymization results with yellow-filled regions
+   - Show license plate anonymization results with yellow-filled regions
+   - Display before/after comparison
    - Display confidence scores
+   - Demonstrate complete obscuration of sensitive information
    - Demonstrate error handling
 2. **Metrics Review**: Present evaluation results
    - Face detection precision/recall
    - License plate detection precision/recall
+   - Anonymization quality assessment
    - Edge case performance
 3. **User Stories Completed**: Review sprint backlog completion (22/22 stories)
 4. **Feedback Collection**: Gather stakeholder input and questions
@@ -1075,6 +1083,8 @@ The POC is organized as a single 4-session sprint (equivalent to 1 week) with da
 - [ ] All 22 user stories completed
 - [ ] Face detection ≥90% precision
 - [ ] Plate detection ≥85% precision
+- [ ] Yellow anonymization completely obscures all sensitive regions
+- [ ] Before/after visualization working
 - [ ] Docker container deployable
 - [ ] Stakeholder satisfaction ≥8/10
 
@@ -1111,9 +1121,11 @@ A user story is considered "Done" when:
 The sprint is considered "Done" when:
 - [ ] All high-priority user stories completed
 - [ ] Accuracy targets met (≥90% faces, ≥85% plates)
+- [ ] Anonymization quality verified (100% obscuration)
+- [ ] Before/after visualization working
 - [ ] System is deployable via Docker
 - [ ] Documentation is complete
-- [ ] Demo successfully presented to stakeholders
+- [ ] Demo successfully presented to stakeholders with visual examples
 - [ ] Retrospective completed
 
 ---
@@ -1125,7 +1137,7 @@ The sprint is considered "Done" when:
 | **Velocity lower than planned** | Medium | High | Prioritize high-value stories (US-1.x, US-2.x, US-3.1, US-4.1); defer medium-priority if needed |
 | **Model accuracy below target** | Low | High | Use proven pre-trained models; extensive testing; adjust confidence thresholds if needed |
 | **Integration issues (API-UI)** | Medium | Medium | Test incrementally; allocate time for debugging in Session 3 |
-| **Dataset quality issues** | Medium | Medium | Use multiple dataset sources; manual curation; accept lower sample size if needed |
+| **Test image availability** | Low | Low | Use publicly available sample images; create simple test cases if needed |
 | **Time overrun** | High | High | Focus on MVP features only; defer nice-to-haves to Phase 2 |
 
 ---
@@ -1140,9 +1152,10 @@ The sprint is considered "Done" when:
 
 ### Phase 2 Roadmap (Sessions 5-8)
 - Integrate generative models (Stable Diffusion)
-- Implement inpainting for face/plate replacement
-- Generate anonymized sample images
-- Evaluate anonymization quality (SSIM, PSNR)
+- Implement advanced inpainting for realistic face/plate replacement
+- Replace yellow fill with synthetic alternatives
+- Generate anonymized sample images with realistic appearance
+- Evaluate anonymization quality (SSIM, PSNR, perceptual metrics)
 
 ### Long-Term Vision (Sessions 9+)
 - Extend to video stream processing

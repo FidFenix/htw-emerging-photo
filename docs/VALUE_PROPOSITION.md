@@ -2,22 +2,22 @@
 
 ## Project Context
 
-This Value Proposition is for the project **"HTW Emerging Photo - Face and License Plate Detection POC"**.
+This Value Proposition is for the project **"HTW Emerging Photo - Face and License Plate Anonymization POC"**.
 
-The system uses AI-based object detection (RetinaFace for faces, YOLO for license plates) to detect and locate sensitive information in images from public transport environments (bus stops, metro stations). This POC focuses on technical feasibility of automated detection as the foundation for future privacy-preserving anonymization. The detection phase is critical for identifying regions that will later be replaced with synthetic alternatives using generative models. GDPR and formal legal compliance frameworks are out of scope due to project time constraints (4-session sprint).
+The system uses AI-based object detection (RetinaFace for faces, YOLO for license plates) to detect and anonymize sensitive information in images from public transport environments (bus stops, metro stations). This POC demonstrates automated anonymization by filling detected regions with solid yellow color (#FFFF00) to completely obscure faces and license plates. This basic anonymization approach validates the technical feasibility of automated privacy protection, serving as the foundation for future advanced anonymization techniques using generative models. GDPR and formal legal compliance frameworks are out of scope due to project time constraints (4-session sprint).
 
 ---
 
 ## 1. Executive Summary
 
-Municipal and transport authorities face a critical challenge: balancing public safety through video surveillance with growing privacy and ethical concerns. This POC demonstrates an AI-powered detection system that automatically identifies faces and license plates in surveillance imagery - the essential first step toward privacy-preserving video analytics. By achieving 90%+ face detection and 85%+ license plate detection accuracy, this project validates the technical feasibility of building a full anonymization pipeline that protects individual privacy while maintaining operational value of surveillance footage.
+Municipal and transport authorities face a critical challenge: balancing public safety through video surveillance with growing privacy and ethical concerns. This POC demonstrates an AI-powered anonymization system that automatically detects and obscures faces and license plates in surveillance imagery using solid yellow color overlay. By achieving 90%+ face detection and 85%+ license plate detection accuracy, combined with complete visual obscuration of sensitive regions, this project validates the technical feasibility of automated privacy protection. This basic anonymization approach serves as the foundation for future advanced techniques while immediately providing privacy protection.
 
 ---
 
 ## 2. Problem Statement
 
 ### Current Situation
-We have **Sessions 1-4 remaining** to complete this POC project. With the project deadline approaching, we face immediate technical and operational challenges that could prevent successful delivery of the face and license plate detection system.
+We have **Sessions 1-4 remaining** to complete this POC project. With the project deadline approaching, we face immediate technical and operational challenges that could prevent successful delivery of the face and license plate anonymization system.
 
 ### Key Pain Points (Project-Specific)
 
@@ -56,17 +56,18 @@ We have **Sessions 1-4 remaining** to complete this POC project. With the projec
 ## 4. Solution Overview
 
 ### System Description
-An AI-powered detection pipeline that automatically identifies and locates faces and license plates in surveillance images. This POC serves as the foundation for a complete anonymization system:
+An AI-powered anonymization pipeline that automatically detects and obscures faces and license plates in surveillance images using solid yellow color overlay. This POC provides immediate privacy protection while serving as the foundation for future advanced anonymization:
 
-**Detection → [Future: Inpainting] → [Future: Reconstruction]**
+**Detection → Anonymization (Yellow Fill) → [Future: Advanced Techniques]**
 
 ### Key Features
-1. **AI-Based Face Detection**: RetinaFace model achieving ≥90% accuracy across various angles, lighting conditions, and image qualities
-2. **AI-Based License Plate Detection**: YOLO model achieving ≥85% accuracy for plates at different distances and orientations
-3. **REST API Integration**: FastAPI backend enabling easy integration with existing surveillance systems
-4. **Interactive Web Dashboard**: Streamlit-based UI for image upload, visualization, and result analysis
-5. **Confidence Scoring**: Transparent confidence metrics for each detection, enabling quality control
-6. **Scalable Architecture**: Docker-based deployment ready for expansion to video streams
+1. **AI-Based Face Detection & Anonymization**: RetinaFace model achieving ≥90% accuracy, with complete yellow color obscuration of detected faces
+2. **AI-Based License Plate Detection & Anonymization**: YOLO model achieving ≥85% accuracy, with complete yellow color obscuration of detected plates
+3. **Visual Obscuration**: Solid yellow (#FFFF00) fill completely hides sensitive information while maintaining image context
+4. **REST API Integration**: FastAPI backend enabling easy integration with existing surveillance systems
+5. **Interactive Web Dashboard**: Streamlit-based UI for image upload, before/after visualization, and result analysis
+6. **Confidence Scoring**: Transparent confidence metrics for each anonymized region, enabling quality control
+7. **Scalable Architecture**: Docker-based deployment ready for expansion to video streams
 
 ### Technical Flow
 
@@ -76,11 +77,25 @@ flowchart LR
     B --> C[Image Preprocessing]
     C --> D[Face Detection<br/>RetinaFace]
     C --> E[Plate Detection<br/>YOLO]
-    D --> F[Result Formatter]
+    D --> F[Anonymizer]
     E --> F
-    F --> G[JSON Response]
-    G --> H[Streamlit UI]
-    H --> I[Visual Display<br/>Bounding Boxes]
+    F --> G[Fill Yellow<br/>#FFFF00]
+    G --> H[Result Formatter]
+    H --> I[JSON Response]
+    I --> J[Streamlit UI]
+    J --> K[Visual Display<br/>Yellow-Filled Regions]
+```
+
+### Visual Anonymization Example
+
+```
+BEFORE:                    AFTER:
+┌──────────────┐          ┌──────────────┐
+│  👤 Person   │    →     │  🟨🟨🟨🟨    │
+│  🚗 ABC-123  │          │  🚗 🟨🟨🟨   │
+└──────────────┘          └──────────────┘
+
+All faces and license plates completely obscured with yellow
 ```
 
 ---
@@ -126,17 +141,19 @@ flowchart LR
 ### Value Map
 
 #### Products & Services
-- RetinaFace-based face detection module
-- YOLO-based license plate detection module
+- RetinaFace-based face detection and anonymization module
+- YOLO-based license plate detection and anonymization module
+- Yellow color overlay anonymization system
 - REST API for system integration
-- Streamlit web interface for demonstration
+- Streamlit web interface for demonstration with before/after visualization
 - Docker containerized deployment
-- Bounding box visualization with confidence scores
+- Anonymized image output with confidence scores
 
 #### Pain Relievers
 - **Automation**: Eliminates manual detection and redaction workload
 - **High Accuracy**: 90%+ face and 85%+ plate detection reduces errors
-- **Privacy Foundation**: Enables future synthetic replacement of sensitive regions
+- **Immediate Privacy Protection**: Yellow anonymization completely obscures sensitive information
+- **Visual Clarity**: Anonymized regions clearly visible, maintaining image context
 - **API Integration**: Easy connection to existing surveillance infrastructure
 - **Scalable Design**: Architecture ready for real-time video processing
 - **No Storage**: Processes in-memory without retaining identifiable images
@@ -154,10 +171,10 @@ flowchart LR
 ## 6. Unique Value Proposition
 
 ### Tagline
-**"AI-Powered Detection for Privacy-Preserving Public Transport Surveillance"**
+**"AI-Powered Anonymization for Privacy-Preserving Public Transport Surveillance"**
 
 ### Expanded Value Proposition
-Unlike traditional surveillance systems that store raw identifiable footage or use quality-degrading blurring techniques, our AI-powered detection system provides the critical foundation for **realistic, privacy-preserving video analytics**. By accurately identifying and locating faces (90%+ accuracy) and license plates (85%+ accuracy), we enable future synthetic replacement of sensitive regions—maintaining surveillance utility while protecting individual privacy. This POC validates the technical feasibility of automated detection, paving the way for generative anonymization that transforms public transport surveillance from a privacy liability into an ethical safety tool.
+Unlike traditional surveillance systems that store raw identifiable footage or use quality-degrading blurring techniques, our AI-powered anonymization system provides **immediate privacy protection through visual obscuration**. By accurately detecting faces (90%+ accuracy) and license plates (85%+ accuracy) and filling them with solid yellow color, we completely obscure sensitive information while maintaining image context and surveillance utility. This POC validates the technical feasibility of automated anonymization, providing immediate privacy benefits while serving as the foundation for future advanced techniques. This transforms public transport surveillance from a privacy liability into an ethical safety tool.
 
 ### Comparison to Alternatives
 
@@ -166,10 +183,11 @@ Unlike traditional surveillance systems that store raw identifiable footage or u
 | **Raw Footage Storage** | Excellent | None | Excellent | N/A |
 | **Manual Redaction** | Poor (blurred) | Moderate | Poor | None |
 | **Automatic Blurring** | Poor | Moderate | Poor | High |
-| **Our Detection POC** | Excellent* | Foundation* | Excellent* | High |
-| **Future: Full Pipeline** | Excellent | Excellent | Excellent | High |
+| **Our Anonymization POC** | Good* | High** | Good* | High |
+| **Future: Advanced Pipeline** | Excellent | Excellent | Excellent | High |
 
-*POC provides detection only; full anonymization in future phases
+*Yellow fill maintains context but reduces visual realism  
+**Complete obscuration of faces and license plates
 
 ---
 
@@ -226,9 +244,11 @@ Unlike traditional surveillance systems that store raw identifiable footage or u
 
 ### Key Differentiators
 
-1. **Realistic Anonymization Foundation**: Unlike simple blurring, our detection enables future synthetic replacement maintaining visual realism and context
-2. **Complete Automation**: End-to-end pipeline from upload to detection without manual intervention, unlike labor-intensive manual redaction
-3. **Adaptability**: Open-source models (RetinaFace, YOLO) allow customization for specific surveillance environments and requirements
+1. **Complete Obscuration**: Unlike blurring which can sometimes be reversed, solid yellow fill completely and irreversibly obscures sensitive information
+2. **Immediate Privacy Protection**: Provides instant anonymization without waiting for advanced generative models, while serving as foundation for future enhancements
+3. **Complete Automation**: End-to-end pipeline from upload to anonymization without manual intervention, unlike labor-intensive manual redaction
+4. **Clear Visual Indication**: Yellow-filled regions clearly show what has been anonymized, providing transparency
+5. **Adaptability**: Open-source models (RetinaFace, YOLO) allow customization for specific surveillance environments and requirements
 
 ---
 
@@ -282,12 +302,13 @@ gantt
 
 ### In Scope
 
-✅ **Face Detection**: Detect and locate faces in images using RetinaFace model  
-✅ **License Plate Detection**: Detect and locate license plates using YOLO model  
+✅ **Face Detection & Anonymization**: Detect and anonymize faces in images using RetinaFace model with yellow color fill  
+✅ **License Plate Detection & Anonymization**: Detect and anonymize license plates using YOLO model with yellow color fill  
+✅ **Visual Obscuration**: Complete coverage of sensitive regions with solid yellow (#FFFF00) color  
 ✅ **Quantitative Evaluation**: Measure detection accuracy (precision, recall, F1-score)  
-✅ **Qualitative Evaluation**: Visual assessment of bounding box quality and edge cases  
-✅ **REST API**: FastAPI backend for detection service integration  
-✅ **Web Interface**: Streamlit UI for image upload and result visualization  
+✅ **Qualitative Evaluation**: Visual assessment of anonymization quality and edge cases  
+✅ **REST API**: FastAPI backend for anonymization service integration  
+✅ **Web Interface**: Streamlit UI for image upload, before/after visualization, and result display  
 ✅ **Docker Deployment**: Containerized application for consistent environment  
 
 ### Out of Scope
@@ -296,10 +317,10 @@ gantt
 ❌ **Hardware Optimization or Edge Deployment**: GPU optimization, embedded systems, edge devices  
 ❌ **Formal GDPR/CCPA Compliance or Documentation**: Legal compliance framework and audit trails  
 ❌ **Multi-camera or Multi-scene Scaling**: Distributed processing across multiple camera feeds  
-❌ **Inpainting**: Generative replacement of detected regions with synthetic alternatives  
-❌ **Generation of Anonymized Sample Video**: Fully anonymized video output (detection only in POC)  
-❌ **Face Recognition**: Identifying specific individuals (detection of faces only, not identification)  
-❌ **OCR/License Plate Text Extraction**: Reading text from license plates  
+❌ **Advanced Inpainting**: Generative replacement of detected regions with realistic synthetic alternatives  
+❌ **Generation of Anonymized Sample Video**: Fully anonymized video output (images only in POC)  
+❌ **Face Recognition**: Identifying specific individuals (anonymization of faces only, not identification)  
+❌ **OCR/License Plate Text Extraction**: Reading text from license plates (anonymization only)  
 
 ### Constraints
 
