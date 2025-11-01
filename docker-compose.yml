@@ -1,0 +1,54 @@
+services:
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: htw-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=HTW Emerging Photo
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - MAX_UPLOAD_SIZE=10485760
+      - FACE_DETECTION_MODEL=retinaface
+      - FACE_CONFIDENCE_THRESHOLD=0.7
+      - PLATE_DETECTION_MODEL=yolo
+      - PLATE_CONFIDENCE_THRESHOLD=0.6
+      - ANONYMIZATION_COLOR=#FFFF00
+    volumes:
+      - ./data/models:/app/data/models
+      - ./data/uploads:/app/data/uploads
+      - insightface-models:/root/.insightface
+    restart: unless-stopped
+    networks:
+      - htw-network
+
+  # Frontend (Streamlit)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: htw-frontend
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://backend:8000/api/v1
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - htw-network
+
+networks:
+  htw-network:
+    driver: bridge
+
+volumes:
+  models:
+  uploads:
+  insightface-models:
+

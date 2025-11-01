@@ -17,3 +17,8 @@
 - ⁠key takeaways:
 -specify models
 -refine a bit
+
+
+The error is due to an incompatibility between the Streamlit version and the use_container_width parameter. Let me fix the frontend code:
+
+The fix has been applied - I changed use_container_width=True to use_column_width=True which is compatible with Streamlit 1.28.2.
