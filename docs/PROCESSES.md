@@ -3,25 +3,27 @@
 ## 1. Project Overview
 
 ### Purpose
-Proof of Concept (POC) to demonstrate automated face detection and license plate detection from images.
+Proof of Concept (POC) to demonstrate automated face and license plate anonymization from images using yellow color overlay.
 
 ### Objectives
-- [ ] Implement face detection from images with confidence scores
-- [ ] Implement license plate detection
+- [ ] Implement face anonymization by filling detected regions with yellow color
+- [ ] Implement license plate anonymization by filling detected regions with yellow color
 - [ ] Achieve >90% detection accuracy on test dataset
 - [ ] Support JPG and PNG image formats
+- [ ] Return anonymized images with sensitive information obscured
 
 ### Success Criteria
 - [ ] Face detection accuracy ≥ 90%
 - [ ] License plate detection accuracy ≥ 85%
-- [ ] Working demo with sample images
+- [ ] Yellow anonymization completely obscures faces and plates
+- [ ] Working demo with sample images showing anonymized output
 
 ### Timeline
 - **Start Date**: October 20, 2025
 - **Expected Completion**: 4 sessions
 - **Milestones**:
   - Session 1-2: Setup and model selection
-  - Session 3-4: Face and license plate detection implementation
+  - Session 3-4: Face and license plate anonymization implementation
 
 ---
 
@@ -140,14 +142,14 @@ flowchart TD
 **User Action**: Opens web browser and navigates to application URL  
 **System Response**: Displays Streamlit landing page with title and instructions  
 **UI Elements**: 
-- Application title: "Face & License Plate Detection"
-- Brief description of functionality
+- Application title: "Face & License Plate Anonymization"
+- Brief description: "Upload images to anonymize faces and license plates with yellow overlay"
 - File upload widget
 
 ---
 
 #### Step 2: Upload Image
-**User Action**: Uploads an image file  
+**User Action**: Uploads an image file for anonymization  
 **Methods**: 
 - Drag and drop image file into upload area
 - Click "Browse files" and select from file system
@@ -159,6 +161,7 @@ flowchart TD
 - File upload widget with drag-and-drop zone
 - "Browse files" button
 - File format and size information
+- Note: "Faces and license plates will be anonymized with yellow overlay"
 
 ---
 
@@ -180,54 +183,58 @@ flowchart TD
 
 ---
 
-#### Step 4: Processing
-**System Action**: Sends image to FastAPI backend for detection  
+#### Step 4: Processing and Anonymization
+**System Action**: Sends image to FastAPI backend for detection and anonymization  
 
 **User Experience**:
 - Loading spinner displayed
-- Status message: "🔄 Processing image..."
+- Status message: "🔄 Anonymizing image..."
 - UI elements disabled during processing
 
 **Backend Process**:
-1. Receives image via POST to `/detect` endpoint
+1. Receives image via POST to `/anonymize` endpoint
 2. Preprocesses image (resize, normalize)
 3. Runs RetinaFace for face detection
 4. Runs YOLO for license plate detection
-5. Formats results as JSON
-6. Returns response to frontend
+5. Fills detected regions with solid yellow color (#FFFF00)
+6. Returns anonymized image and metadata as JSON
+7. Sends response to frontend
 
 **Processing Time**: < 5 seconds (typical)
 
 ---
 
-#### Step 5: Display Results
-**System Action**: Renders detection results  
+#### Step 5: Display Anonymized Results
+**System Action**: Renders anonymized image and detection metadata  
 
 **Visual Display**:
-- **Original Image**: Displayed with bounding boxes overlaid
-- **Face Bounding Boxes**: Green rectangles around detected faces
-- **Plate Bounding Boxes**: Blue rectangles around detected plates
-- **Confidence Scores**: Percentage labels on each bounding box
+- **Anonymized Image**: Displayed with yellow-filled rectangles obscuring sensitive regions
+- **Face Regions**: Solid yellow (#FFFF00) rectangles completely covering detected faces
+- **Plate Regions**: Solid yellow (#FFFF00) rectangles completely covering detected license plates
+- **Confidence Scores**: Percentage labels displayed below image
 
 **Metadata Display**:
-- Total faces detected: `X faces found`
-- Total plates detected: `Y plates found`
+- Total faces anonymized: `X faces anonymized`
+- Total plates anonymized: `Y plates anonymized`
 - Average confidence: `Z%`
+- Anonymization method: "Yellow color overlay"
 
 **UI Layout**:
 ```
 ┌─────────────────────────────────────┐
-│  Annotated Image                    │
-│  (with bounding boxes)              │
+│  Anonymized Image                   │
+│  (with yellow-filled regions)       │
+│  🟨 = Face    🟨 = License Plate    │
 └─────────────────────────────────────┘
 
-📊 Detection Results:
-   - Faces Detected: 3
-   - Plates Detected: 1
+📊 Anonymization Results:
+   - Faces Anonymized: 3
+   - Plates Anonymized: 1
    - Avg Confidence: 87%
+   - Color: Yellow (#FFFF00)
 
 ┌─────────────────────────────────────┐
-│  Detection Details:                 │
+│  Anonymization Details:             │
 │  Face 1: 94% confidence             │
 │  Face 2: 89% confidence             │
 │  Face 3: 81% confidence             │
@@ -584,15 +591,6 @@ python scripts/benchmark.py
 - **Formatting**: black
 - **Linting**: flake8
 - **Type Checking**: mypy
-
----
-
-## Performance Targets
-
-| Metric | Target | Status |
-|--------|--------|--------|
-| Face Detection Accuracy | > 90% | TBD |
-| Plate Detection Accuracy | > 85% | TBD |
 
 ---
 

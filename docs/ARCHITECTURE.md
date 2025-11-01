@@ -535,15 +535,10 @@ class Settings(BaseSettings):
 - Connection pooling
 - Response compression (gzip)
 
-#### Concurrency
-- Handle multiple requests concurrently
-- Thread/process pool for CPU-bound tasks
-- Queue system for high load (optional)
-
-### Performance Targets
-- **API Response**: < 500ms overhead (excluding processing)
-- **Concurrent Requests**: Handle 5+ simultaneous requests
-- **Memory Usage**: < 2GB per instance
+#### Asynchronous Operations
+- **Asynchronous API**: All API calls use async/await pattern for non-blocking operations
+- Non-blocking I/O operations
+- Efficient resource utilization
 
 ---
 
@@ -719,7 +714,7 @@ Flask (lacks modern features), Django REST Framework (too heavy), Express.js (di
 Need ML framework for RetinaFace and YOLO models. Must support efficient inference and debugging.
 
 **Decision**:  
-Use PyTorch as the sole ML framework.
+Use PyTorch as the sole ML framework because Yolo has a direct dependancy with Pytorch.
 
 **Consequences**:  
 Excellent model implementations, pythonic API, better debugging. Larger model files than TensorFlow Lite.

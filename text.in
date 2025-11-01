@@ -1,0 +1,28 @@
+- Anonymisation done
+- NFR: to be quantified 
+- Code quality: are we handling that? No
+- NFR: Security to be removed
+- ⁠architecture decisions record for our libraries (yolo, retina… is it trained/tested explain why) 
+— why yolo v5-v8 ( yolo has three different ways) … there are different frameworks (transformers and so on) should be added..
+- what is CORS 
+- ⁠Concurrency ( first point to be deleted) 
+- ⁠ADR-003: why PyTorch 
+-we have two api contradicting,,,
+
+- ⁠check for inconsistency ( sync or async…) - more specification needed 
+- ⁠what r the classes we r using out of box
+- ⁠search for yolo version for license plates already trained 
+- ⁠What about fine tuning? 
+- ⁠a lot of content in the planning section 
+- ⁠key takeaways:
+-specify models
+-refine a bit
+
+Prompt:
+
+Update the project and add in scope, 'Anonymization of human faces and license plate cards' instead of detection of faces and license plates.
+The anonymization must be basic by just coloring the bounding boxes of human faces and license plates with yellow color.
+
+
+remove NFR-1.1, NFR-4, and NFR-5 from the project. Remove concurrency from performance considerations and remove the performance targets.
+Regarding the api call, all of them should asynchronous.
