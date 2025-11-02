@@ -40,7 +40,7 @@ graph TB
 
     subgraph Detection["Detection Layer"]
         FaceDetector["Face Detector<br/>Model: RetinaFace<br/>- Detect faces<br/>- Compute confidence<br/>- Return coordinates"]
-        PlateDetector["Plate Detector<br/>Model: YOLO<br/>- Detect plates<br/>- Compute confidence<br/>- Return coordinates"]
+        PlateDetector["Plate Detector<br/>Model: YOLOv11 (Fine-tuned)<br/>- Detect plates<br/>- Compute confidence<br/>- Return coordinates"]
     end
 
     subgraph Storage["Model Storage"]
@@ -271,7 +271,9 @@ class PlateDetector:
 ```
 
 **Selected Model**:
-- **YOLO (v5/v8)**: Fast, accurate object detection for license plates
+- **YOLOv11 (Fine-tuned)**: `morsetechlab/yolov11-license-plate-detection`
+- Specialized license plate detection model
+- See [ADR-001](ADR-001-LICENSE-PLATE-DETECTION-MODEL.md) for detailed rationale
 
 ### 3.5 Model Storage
 
@@ -280,21 +282,20 @@ class PlateDetector:
 **Structure**:
 ```
 data/models/
-├── face_detection/
-│   └── retinaface/
-│       ├── weights.pth
-│       └── config.json
-└── plate_detection/
-    └── yolo/
-        ├── best.pt
-        └── config.yaml
+├── license_plate_detector.pt  # Optional: Custom license plate model
+└── [cached models]             # Auto-downloaded from Hugging Face
 ```
 
 **Management**:
-- Models downloaded during setup
-- Version controlled via config files
-- Loaded once at startup (singleton pattern)
+- **Face Detection (RetinaFace)**: Downloaded automatically by `insightface` library on first use
+- **License Plate Detection (YOLOv11)**: Downloaded from Hugging Face Hub on first use
+  - Repository: `morsetechlab/yolov11-license-plate-detection`
+  - Cached locally after first download
+  - See [ADR-001](ADR-001-LICENSE-PLATE-DETECTION-MODEL.md) for details
+- **Custom Models**: Users can provide custom license plate models by placing them as `license_plate_detector.pt`
+- Models loaded once at startup (singleton pattern)
 - Kept in memory for performance
+- GPU support: MPS (Apple Silicon), CUDA (NVIDIA), CPU fallback
 
 ---
 
@@ -308,7 +309,7 @@ sequenceDiagram
     participant API as API Layer
     participant Preprocessor
     participant FaceDetector as Face Detector<br/>(RetinaFace)
-    participant PlateDetector as Plate Detector<br/>(YOLO)
+    participant PlateDetector as Plate Detector<br/>(YOLOv11)
     participant Anonymizer
     
     Client->>API: POST /anonymize with image
@@ -617,16 +618,6 @@ class Settings(BaseSettings):
 - Use efficient image libraries (Pillow-SIMD)
 - Batch processing (if multiple images)
 
-#### API Performance
-- Asynchronous request handling (FastAPI async)
-- Connection pooling
-- Response compression (gzip)
-
-#### Asynchronous Operations
-- **Asynchronous API**: All API calls use async/await pattern for non-blocking operations
-- Non-blocking I/O operations
-- Efficient resource utilization
-
 ---
 
 ## 10. Scalability & Deployment
@@ -887,22 +878,24 @@ MTCNN (lower accuracy ~85%), MediaPipe (less accurate for occlusions), Dlib (slo
 
 ---
 
-### ADR-008: YOLO for Plates
+### ADR-008: YOLOv11 Fine-tuned Model for License Plate Detection
 
-**Date**: October 20, 2025  
+**Date**: October 20, 2025 (Updated: November 2, 2025)  
 **Status**: Accepted
 
 **Context**:  
-Need ≥85% license plate detection accuracy. Various plate sizes and angles.
+Need ≥85% license plate detection accuracy. Various plate sizes and angles. Standard YOLO models (YOLOv8, YOLOv11) trained on COCO dataset do NOT include license plate detection.
 
 **Decision**:  
-Use YOLO (YOLOv5/v8) for license plate detection.
+Use fine-tuned YOLOv11 model `morsetechlab/yolov11-license-plate-detection` from Hugging Face Hub.
+
+**Note**: See [ADR-001-LICENSE-PLATE-DETECTION-MODEL.md](ADR-001-LICENSE-PLATE-DETECTION-MODEL.md) for comprehensive rationale and technical details.
 
 **Consequences**:  
-Excellent accuracy (>85%), fast inference. General detector, not plate-specific by default.
+Direct license plate detection without two-stage approach. Higher accuracy than base YOLO models. Model auto-downloaded from Hugging Face on first use. May detect only text portion of plates (requires expansion logic).
 
 **Alternatives**:  
-OpenALPR (GPL license issues), custom CNN (requires training), template matching (low accuracy).
+YOLOv8n with two-stage detection (lower accuracy), OpenALPR (complex setup, licensing), custom training (outside POC scope).
 
 ---
 

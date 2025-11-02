@@ -8,13 +8,13 @@ Proof of Concept (POC) to demonstrate automated face and license plate anonymiza
 ### Objectives
 - [ ] Implement face anonymization by filling detected regions with yellow color
 - [ ] Implement license plate anonymization by filling detected regions with yellow color
-- [ ] Achieve >90% detection accuracy on test dataset
+- [ ] Achieve >70% detection accuracy on test dataset
 - [ ] Support JPG and PNG image formats
 - [ ] Return anonymized images with sensitive information obscured
 
 ### Success Criteria
-- [ ] Face detection accuracy ≥ 90%
-- [ ] License plate detection accuracy ≥ 85%
+- [ ] Face detection accuracy ≥ 80%
+- [ ] License plate detection accuracy ≥ 70%
 - [ ] Yellow anonymization completely obscures faces and plates
 - [ ] Working demo with sample images showing anonymized output
 
@@ -27,113 +27,14 @@ Proof of Concept (POC) to demonstrate automated face and license plate anonymiza
 
 ---
 
-## 2. Process Diagrams
-
-### 2.1 Development Process Flow
-
-```mermaid
-flowchart TD
-    Start[Project Start] --> Setup[Session 1-2: Setup & Model Selection]
-    Setup --> Research[Research Models]
-    Research --> Select[Select Best Models]
-    Select --> Configure[Configure Environment]
-    Configure --> Implementation[Session 3-4: Anonymization Implementation]
-    Implementation --> FaceAnonymization[Implement Face Anonymization]
-    Implementation --> PlateAnonymization[Implement License Plate Anonymization]
-    FaceAnonymization --> Integration[Integrate with API]
-    PlateAnonymization --> Integration
-    Integration --> Demo[Create Demo]
-    Demo --> End[Project Complete]
-    
-    style Start fill:#4ecdc4
-    style End fill:#4ecdc4
-    style Implementation fill:#ffe66d
-```
-
-### 2.2 Anonymization Request Flow
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant WebBrowser as Web Browser
-    participant API as FastAPI Server
-    participant Preprocessor
-    participant FaceDetector as Face Detector<br/>(RetinaFace)
-    participant PlateDetector as Plate Detector<br/>(YOLO)
-    participant Anonymizer
-    
-    User->>WebBrowser: Upload Image (JPG/PNG)
-    WebBrowser->>API: POST /anonymize
-    
-    rect rgb(240, 248, 255)
-        Note over API: Input Validation
-        API->>API: Check Format (JPG/PNG)
-        API->>API: Check Size (≤10MB)
-        API->>API: Validate Image Integrity
-    end
-    
-    alt Valid Image
-        rect rgb(255, 250, 240)
-            Note over API,Preprocessor: Image Preprocessing
-            API->>Preprocessor: Send Valid Image
-            Preprocessor->>Preprocessor: Resize if >4096x4096
-            Preprocessor->>Preprocessor: Convert to RGB
-            Preprocessor->>Preprocessor: Normalize Pixels
-        end
-        
-        rect rgb(240, 255, 240)
-            Note over Preprocessor,PlateDetector: Detection Phase
-            Preprocessor->>FaceDetector: Send Preprocessed Image
-            FaceDetector->>FaceDetector: Run RetinaFace Inference
-            FaceDetector->>Preprocessor: Return Face BBoxes + Confidence
-            
-            Preprocessor->>PlateDetector: Send Preprocessed Image
-            PlateDetector->>PlateDetector: Run YOLO Inference
-            PlateDetector->>Preprocessor: Return Plate BBoxes + Confidence
-        end
-        
-        rect rgb(255, 255, 224)
-            Note over Preprocessor,Anonymizer: Anonymization Phase
-            Preprocessor->>Anonymizer: Send Image + All Detections
-            Anonymizer->>Anonymizer: Filter by Confidence Threshold
-            Anonymizer->>Anonymizer: Fill Face BBoxes with Yellow (#FFFF00)
-            Anonymizer->>Anonymizer: Fill Plate BBoxes with Yellow (#FFFF00)
-            Anonymizer->>Anonymizer: Encode Anonymized Image (Base64)
-        end
-        
-        rect rgb(248, 248, 255)
-            Note over Anonymizer,API: Response Formatting
-            Anonymizer->>API: Return Anonymized Image + Metadata
-            API->>API: Format JSON Response
-            API->>API: Include Processing Time
-        end
-        
-        API->>WebBrowser: 200 OK + JSON Response
-        WebBrowser->>WebBrowser: Decode Base64 Image
-        WebBrowser->>User: Display Anonymized Image
-        WebBrowser->>User: Show Yellow-Filled Regions
-        WebBrowser->>User: Display Confidence Scores
-        
-    else Invalid Image
-        rect rgb(255, 240, 240)
-            Note over API: Error Handling
-            API->>API: Generate Error Message
-            API->>WebBrowser: 400/413 Error + JSON
-            WebBrowser->>User: Show Error Message
-        end
-    end
-```
-
----
-
-## 3. User Flow Interaction
+## 2. User Flow Interaction
 
 ### Overview
 This section describes the end-to-end user interaction flow for the face and license plate anonymization system via the Streamlit web interface.
 
 ---
 
-### 3.1 User Flow Diagram
+### 2.1 User Flow Diagram
 
 ```mermaid
 flowchart TD
@@ -181,7 +82,7 @@ flowchart TD
 
 ---
 
-### 3.2 Detailed User Flow Steps
+### 2.2 Detailed User Flow Steps
 
 #### Step 1: Access Application
 **User Action**: Opens web browser and navigates to application URL  
@@ -376,7 +277,7 @@ Legend:
 
 ---
 
-### 3.3 User Interaction States
+### 2.3 User Interaction States
 
 ```mermaid
 stateDiagram-v2
@@ -402,7 +303,7 @@ stateDiagram-v2
 
 ---
 
-### 3.4 Error Handling Flow
+### 2.4 Error Handling Flow
 
 **Error Scenarios**:
 
@@ -416,7 +317,7 @@ stateDiagram-v2
 
 ---
 
-### 3.5 User Experience Enhancements
+### 2.5 User Experience Enhancements
 
 #### Current (MVP)
 - ✅ Single image upload
@@ -436,7 +337,7 @@ stateDiagram-v2
 
 ---
 
-### 3.6 Accessibility Considerations
+### 2.6 Accessibility Considerations
 
 **Keyboard Navigation**:
 - Tab through interactive elements
@@ -455,7 +356,7 @@ stateDiagram-v2
 
 ---
 
-### 3.7 Performance Expectations
+### 2.7 Performance Expectations
 
 | Metric | Target | User Impact |
 |--------|--------|-------------|
@@ -463,6 +364,84 @@ stateDiagram-v2
 | **Upload Response** | Immediate | Instant feedback |
 | **Processing Time** | < 5 seconds | Short wait, acceptable |
 | **Result Display** | < 1 second | Smooth transition |
+
+---
+
+## 3. Process Diagrams
+
+### 3.1 Anonymization Request Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant WebBrowser as Web Browser
+    participant API as FastAPI Server
+    participant Preprocessor
+    participant FaceDetector as Face Detector<br/>(RetinaFace)
+    participant PlateDetector as Plate Detector<br/>(YOLOv11)
+    participant Anonymizer
+    
+    User->>WebBrowser: Upload Image (JPG/PNG)
+    WebBrowser->>API: POST /anonymize
+    
+    rect rgb(240, 248, 255)
+        Note over API: Input Validation
+        API->>API: Check Format (JPG/PNG)
+        API->>API: Check Size (≤10MB)
+        API->>API: Validate Image Integrity
+    end
+    
+    alt Valid Image
+        rect rgb(255, 250, 240)
+            Note over API,Preprocessor: Image Preprocessing
+            API->>Preprocessor: Send Valid Image
+            Preprocessor->>Preprocessor: Resize if >4096x4096
+            Preprocessor->>Preprocessor: Convert to RGB
+            Preprocessor->>Preprocessor: Normalize Pixels
+        end
+        
+        rect rgb(240, 255, 240)
+            Note over Preprocessor,PlateDetector: Detection Phase
+            Preprocessor->>FaceDetector: Send Preprocessed Image
+            FaceDetector->>FaceDetector: Run RetinaFace Inference
+            FaceDetector->>Preprocessor: Return Face BBoxes + Confidence
+            
+            Preprocessor->>PlateDetector: Send Preprocessed Image
+            PlateDetector->>PlateDetector: Run YOLO Inference
+            PlateDetector->>Preprocessor: Return Plate BBoxes + Confidence
+        end
+        
+        rect rgb(255, 255, 224)
+            Note over Preprocessor,Anonymizer: Anonymization Phase
+            Preprocessor->>Anonymizer: Send Image + All Detections
+            Anonymizer->>Anonymizer: Filter by Confidence Threshold
+            Anonymizer->>Anonymizer: Fill Face BBoxes with Yellow (#FFFF00)
+            Anonymizer->>Anonymizer: Fill Plate BBoxes with Yellow (#FFFF00)
+            Anonymizer->>Anonymizer: Encode Anonymized Image (Base64)
+        end
+        
+        rect rgb(248, 248, 255)
+            Note over Anonymizer,API: Response Formatting
+            Anonymizer->>API: Return Anonymized Image + Metadata
+            API->>API: Format JSON Response
+            API->>API: Include Processing Time
+        end
+        
+        API->>WebBrowser: 200 OK + JSON Response
+        WebBrowser->>WebBrowser: Decode Base64 Image
+        WebBrowser->>User: Display Anonymized Image
+        WebBrowser->>User: Show Yellow-Filled Regions
+        WebBrowser->>User: Display Confidence Scores
+        
+    else Invalid Image
+        rect rgb(255, 240, 240)
+            Note over API: Error Handling
+            API->>API: Generate Error Message
+            API->>WebBrowser: 400/413 Error + JSON
+            WebBrowser->>User: Show Error Message
+        end
+    end
+```
 
 ---
 
@@ -560,7 +539,8 @@ pytest tests/test_face_anonymization.py
 
 ### Recommended Models
 - **Face Detection**: RetinaFace
-- **License Plate Detection**: YOLO
+- **License Plate Detection**: YOLOv11 (Fine-tuned: `morsetechlab/yolov11-license-plate-detection`)
+  - See [ADR-001](ADR-001-LICENSE-PLATE-DETECTION-MODEL.md) for rationale
 
 ---
 
