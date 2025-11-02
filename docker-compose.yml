@@ -17,7 +17,8 @@ services:
       - FACE_DETECTION_MODEL=retinaface
       - FACE_CONFIDENCE_THRESHOLD=0.7
       - PLATE_DETECTION_MODEL=yolo
-      - PLATE_CONFIDENCE_THRESHOLD=0.6
+      - PLATE_CONFIDENCE_THRESHOLD=0.20
+      - ENABLE_PLATE_DETECTION=true
       - ANONYMIZATION_COLOR=#FFFF00
     volumes:
       - ./data/models:/app/data/models

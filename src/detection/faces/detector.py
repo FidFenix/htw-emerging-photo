@@ -25,11 +25,13 @@ class FaceDetector(Detector):
         self.load_model()
     
     def load_model(self) -> None:
-        """Load RetinaFace model with GPU support"""
+        """Load RetinaFace model with GPU support (MPS for Apple Silicon)"""
         try:
-            self.logger.info("Loading RetinaFace model with CUDA GPU support...")
+            self.logger.info("Loading RetinaFace model with GPU support...")
             
-            # Try to use CUDA GPU (ctx_id=0 for GPU 0)
+            # Try to use GPU (CUDA or fallback to CPU)
+            # Note: InsightFace uses ONNX Runtime which doesn't support MPS directly
+            # We'll use CUDA if available, otherwise CPU
             try:
                 self.model = FaceAnalysis(
                     name='buffalo_l',
@@ -38,8 +40,8 @@ class FaceDetector(Detector):
                 self.model.prepare(ctx_id=0, det_size=(640, 640))
                 self.logger.info("RetinaFace model loaded successfully on CUDA GPU")
             except Exception as gpu_error:
-                self.logger.warning(f"Failed to load on GPU: {gpu_error}")
-                self.logger.info("Falling back to CPU...")
+                self.logger.warning(f"CUDA not available: {gpu_error}")
+                self.logger.info("Using CPU for RetinaFace (ONNX Runtime doesn't support MPS)")
                 self.model = FaceAnalysis(
                     name='buffalo_l',
                     providers=['CPUExecutionProvider']

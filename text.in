@@ -22,3 +22,18 @@
 The error is due to an incompatibility between the Streamlit version and the use_container_width parameter. Let me fix the frontend code:
 
 The fix has been applied - I changed use_container_width=True to use_column_width=True which is compatible with Streamlit 1.28.2.
+
+model not that good.
+keremberke/yolov8n-license-plate-detection
+morsetechlab/yolov11-license-plate-detection
+
+YOLOv8m (Medium) - ~93% accuracy (~50MB)
+Best balance of accuracy and speed
+This will be tried first
+YOLOv8s (Small) - ~90% accuracy (~22MB)
+Fallback if medium fails
+YOLOv8n (Nano) - ~85% accuracy (~6MB)
+Last resort if others fail
+
+
+Found model files: ['license-plate-finetune-v1l.pt', 'license-plate-finetune-v1m.pt', 'license-plate-finetune-v1n.pt', 'license-plate-finetune-v1s.pt', 'license-plate-finetune-v1x.pt']

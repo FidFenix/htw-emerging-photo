@@ -57,9 +57,9 @@ class Anonymizer:
                 outline=self.color
             )
             
-            self.logger.debug(
+            self.logger.info(
                 f"Anonymized {detection.label} {detection.id} at "
-                f"({x1}, {y1}, {x2}, {y2}) with {self.color}"
+                f"({x1}, {y1}, {x2}, {y2}) size: {bbox.width}x{bbox.height} with {self.color}"
             )
         
         self.logger.info(

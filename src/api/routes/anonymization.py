@@ -33,7 +33,7 @@ def get_components():
             confidence_threshold=settings.face_confidence_threshold
         )
     
-    if plate_detector is None:
+    if plate_detector is None and settings.enable_plate_detection:
         logger.info("Initializing plate detector...")
         plate_detector = PlateDetector(
             confidence_threshold=settings.plate_confidence_threshold
@@ -116,9 +116,17 @@ async def anonymize_image(
         logger.info("Running face detection...")
         face_detections = face_det.detect(image_array)
         
-        # Detect license plates
-        logger.info("Running license plate detection...")
-        plate_detections = plate_det.detect(image_array)
+        # Detect license plates (only if enabled)
+        plate_detections = []
+        if settings.enable_plate_detection:
+            logger.info("Running license plate detection...")
+            try:
+                plate_detections = plate_det.detect(image_array)
+            except Exception as e:
+                logger.warning(f"License plate detection failed: {e}")
+                logger.info("Continuing with face detection only")
+        else:
+            logger.info("License plate detection is disabled (enable_plate_detection=False)")
         
         # Combine all detections
         all_detections = face_detections + plate_detections
@@ -183,11 +191,11 @@ async def get_info() -> Dict[str, Any]:
         "version": settings.app_version,
         "models": {
             "face_detection": settings.face_detection_model,
-            "plate_detection": settings.plate_detection_model
+            "plate_detection": settings.plate_detection_model if settings.enable_plate_detection else "disabled"
         },
         "thresholds": {
             "face_confidence": settings.face_confidence_threshold,
-            "plate_confidence": settings.plate_confidence_threshold
+            "plate_confidence": settings.plate_confidence_threshold if settings.enable_plate_detection else "N/A"
         },
         "anonymization": {
             "color": settings.anonymization_color,
@@ -196,6 +204,10 @@ async def get_info() -> Dict[str, Any]:
         "limits": {
             "max_upload_size_mb": settings.max_upload_size / (1024 * 1024),
             "supported_formats": ["JPG", "PNG"]
+        },
+        "features": {
+            "face_detection": True,
+            "plate_detection": settings.enable_plate_detection
         }
     }
 

@@ -23,7 +23,8 @@ class Settings(BaseSettings):
     face_detection_model: str = "retinaface"
     face_confidence_threshold: float = 0.7
     plate_detection_model: str = "yolo"
-    plate_confidence_threshold: float = 0.6
+    plate_confidence_threshold: float = 0.20  # Lower threshold for better detection
+    enable_plate_detection: bool = True  # Enabled - using Hugging Face YOLOv11 model
     
     # Anonymization
     anonymization_color: str = "#FFFF00"  # Yellow
