@@ -26,7 +26,7 @@ This is a POC to validate the feasibility and accuracy of automated face and lic
 - **Acceptance Criteria**:
   - Anonymizes multiple faces in single image
   - Minimum confidence threshold: 70%
-  - Detection accuracy ≥ 90% on test dataset
+  - Detection accuracy ≥ 80% on test dataset
   - Yellow color completely obscures face regions
 
 #### FR-1.2: Handle Multiple Faces
@@ -44,7 +44,7 @@ This is a POC to validate the feasibility and accuracy of automated face and lic
   - Yellow-filled rectangles covering detected license plates
   - Confidence score (0-100%) for each detection
 - **Acceptance Criteria**:
-  - Detection accuracy ≥ 85% on test dataset
+  - Detection accuracy ≥ 70% on test dataset
   - Minimum confidence threshold: 70%
   - Yellow color completely obscures license plate text
 
@@ -135,15 +135,10 @@ This is a POC to validate the feasibility and accuracy of automated face and lic
 ### NFR-1: Performance
 
 #### NFR-1.1: Accuracy
-- **Face Detection**: ≥ 90% accuracy
-- **Plate Detection**: ≥ 85% accuracy
+- **Face Detection**: ≥ 80% accuracy
+- **Plate Detection**: ≥ 70% accuracy
 - **Measurement**: Precision on labeled test dataset
 - **Priority**: Critical
-
-#### NFR-1.2: Asynchronous API Operations
-- **Requirement**: All API calls shall be asynchronous
-- **Implementation**: Use async/await pattern in FastAPI
-- **Priority**: High
 
 ### NFR-2: Usability
 
@@ -244,23 +239,7 @@ This is a POC to validate the feasibility and accuracy of automated face and lic
 
 ---
 
-## 7. Success Metrics
-
-### Accuracy Metrics
-- Face detection precision: ≥ 90%
-- Plate detection precision: ≥ 85%
-
-### Performance Metrics
-- Success rate: > 95% (no crashes)
-- Efficient processing performance
-
-### Usability Metrics
-- Setup time: < 15 minutes for new developer
-- Clear error messages for 100% of failure cases
-
----
-
-## 8. Out of Scope
+## 7. Out of Scope
 
 ### Explicitly NOT Included
 - ❌ Real-time video processing
@@ -278,7 +257,7 @@ This is a POC to validate the feasibility and accuracy of automated face and lic
 
 ---
 
-## 9. Future Enhancements (Post-POC)
+## 8. Future Enhancements (Post-POC)
 
 ### Potential Features
 - Real-time video processing
@@ -294,23 +273,27 @@ This is a POC to validate the feasibility and accuracy of automated face and lic
 
 ---
 
-## 10. Requirements Traceability Matrix
+## 9. Requirements Traceability Matrix
 
 | ID | Requirement | Priority | Status | Test Coverage |
 |----|-------------|----------|--------|---------------|
-| FR-1.1 | Face Detection | Critical | Pending | TBD |
+| FR-1.1 | Face Anonymization | Critical | Pending | TBD |
 | FR-1.2 | Multiple Faces | High | Pending | TBD |
-| FR-2.1 | Plate Detection | Critical | Pending | TBD |
+| FR-2.1 | License Plate Anonymization | Critical | Pending | TBD |
 | FR-2.2 | Multiple Plates | High | Pending | TBD |
 | FR-3.1 | Image Upload | High | Pending | TBD |
-| FR-3.2 | Preprocessing | Medium | Pending | TBD |
+| FR-3.2 | Image Preprocessing and Anonymization | Critical | Pending | TBD |
 | FR-4.1 | REST API Endpoints | High | Pending | TBD |
 | FR-4.2 | JSON Response Format | High | Pending | TBD |
 | FR-4.3 | Error Handling | High | Pending | TBD |
-| NFR-1.1 | Processing Speed | High | Pending | TBD |
-| NFR-1.2 | Accuracy | Critical | Pending | TBD |
-| NFR-5.1 | Input Validation | High | Pending | TBD |
-| NFR-5.2 | Data Privacy | Critical | Pending | TBD |
+| NFR-1.1 | Accuracy (Face ≥80%, Plate ≥70%) | Critical | Pending | TBD |
+| NFR-2.1 | Simple Interface | Medium | Pending | TBD |
+| NFR-2.2 | Error Messages | Medium | Pending | TBD |
+| NFR-3.1 | Stability | High | Pending | TBD |
+| NFR-3.2 | Deterministic Results | Medium | Pending | TBD |
+| NFR-4.1 | Platform Support | Medium | Pending | TBD |
+| NFR-4.2 | Python Version | High | Pending | TBD |
+| NFR-4.3 | Dependencies | Low | Pending | TBD |
 
 ---
 

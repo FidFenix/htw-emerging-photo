@@ -38,7 +38,7 @@ This section describes the end-to-end user interaction flow for the face and lic
 
 ```mermaid
 flowchart TD
-    Start([User Opens Web App]) --> Landing[View Landing Page]
+    Start([User Opens Web App]) --> Landing[View UI Page]
     Landing --> Instructions[Read Instructions]
     Instructions --> Upload{Upload Image}
     
@@ -353,17 +353,6 @@ stateDiagram-v2
 - High contrast color scheme
 - Clear font sizes (minimum 14px)
 - Yellow anonymization clearly visible
-
----
-
-### 2.7 Performance Expectations
-
-| Metric | Target | User Impact |
-|--------|--------|-------------|
-| **Page Load Time** | < 2 seconds | Fast initial access |
-| **Upload Response** | Immediate | Instant feedback |
-| **Processing Time** | < 5 seconds | Short wait, acceptable |
-| **Result Display** | < 1 second | Smooth transition |
 
 ---
 

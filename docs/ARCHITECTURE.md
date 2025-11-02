@@ -616,7 +616,6 @@ class Settings(BaseSettings):
 #### Image Processing
 - Resize large images before detection
 - Use efficient image libraries (Pillow-SIMD)
-- Batch processing (if multiple images)
 
 ---
 
